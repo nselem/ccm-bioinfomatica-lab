@@ -9,5 +9,5 @@ Aqui pueden documentar sus resultados
 - [Presentación preliminar](https://docs.google.com/presentation/d/1YyO8U6t-XIxFc9xecheJVKE6DqpXWNAv/edit?usp=share_link&ouid=112224471038090317539&rtpof=true&sd=true)   
 - Datos de Atlas de suelo  
 - Artículo 1 de geolocalización
-- Articulo 2 de Geolocalización  
+- [Datta et al. Capitulo Geolocalización](2021_Book_StatisticalAnalysisOfMicrobiom-55-88.pdf)
 
