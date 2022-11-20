@@ -11,5 +11,8 @@ Aqui pueden documentar sus resultados
 - [Artículo 1 de geolocalización](files/Global forensic geolocation with deep neural networks.pdf)
 - [Datta et al. Capitulo Geolocalización](files/2021_Book_StatisticalAnalysisOfMicrobiom-55-88.pdf)
 - [Lección de introducción a metagenómica The Carpentries](https://carpentries-incubator.github.io/metagenomics-workshop/)
-- [Lección de introducción a Pangenómica The Carpentries]([The carpentries](https://czirion.github.io/comparative-genomics-workshop/)
-
+- [Lección de introducción a Pangenómica The Carpentries The carpentries] https://czirion.github.io/comparative-genomics-workshop/)
+- [Reto Cambda 2019](http://camda2019.bioinf.jku.at/doku.php)
+- [Reto Cambda 2020](http://camda2020.bioinf.jku.at/doku.php)
+- [Librería de Clima a partir de coordenadas]()
+- [Librería de tax-id]()
