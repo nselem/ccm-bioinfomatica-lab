@@ -20,6 +20,8 @@ Metodos de clasificación y predicción
  * Redes Neuronales
  * Naive Bayes
 
+Métricas de Evaluación
+
 
 
 
