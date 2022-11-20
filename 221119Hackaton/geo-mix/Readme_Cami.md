@@ -13,3 +13,4 @@ Luego, si se tienen los nombre de algun linaje taxonomico, se puede llegar a su 
 
 Y si se quiere saber a que rango taxonomico esta el TaxID, `ncbi.get_rank([29407])` obteniendo asi `{29407: 'genus'}`. 
 
+[etetoolkit](http://etetoolkit.org/docs/2.3/tutorial/tutorial_ncbitaxonomy.html)
