@@ -1,35 +1,62 @@
+#!/usr/bin/env Rscript
+
 #Este script sirve para agregar datos sobre clima, según la clasificación Köppen-Geiger, a sets de datos que contenga coordenadas de latitud y longitud
+#Los argumentos del script son un archivo .csv de entrada con tres columnas en el orden: ids, longitud y latitud 
+#Y un 
+args = commandArgs(trailingOnly=TRUE)
+
+# test if there is at least one argument: if not, return an error
+if (length(args)==0) {
+  stop("At least one argument must be supplied (input file).n", call.=FALSE)
+} else if (length(args)==1) {
+  # default output file
+  args[2] = "out.csv"
+}
 
 
 
+#Librerías requeridas para "kgc"
+#Librería que contiene datos sobre el clima según la clasificación Köppen-Geiger, y que predice tipo de clima a partir de coordenadas de latitud y longitud.
+if (!require(shiny)) install.packages('shiny')
+library(shiny)
+if (!require(shinythemes)) install.packages('shinythemes')
+library(shinythemes)
+if (!require(plyr)) install.packages('plyr')
+library(plyr)
+if (!require(kgc)) install.packages('kgc')
+library(kgc)
+
+
+#library(kgc)
 #install.packages("shiny")
 #install.packages("shinythemes")
 #install.packages("readxl")
 #install.packages("kgc")
-
 #Librería para leer archivos de excel
-library(readxl)
-#Librerías requeridas para "kgc"
-library(shiny)
-library(shinythemes)
-#Librería que contiene datos sobre el clima según la clasificación Köppen-Geiger, y que predice tipo de clima a partir de coordenadas de latitud y longitud.
-library(kgc)
+#library(readxl)
+#library(shiny)
+#library(shinythemes)
+#library(kgc)
 
 #Carga de datos
 #Ejemplo de carga de archivo formato excel
-data <- read_xlsx(path = "~/GlobalAtlas-16S/Dataset_01_22_2018.xlsx", sheet = 1, col_names = TRUE)
-#Ejemplo de carga de datos en .csv, .tsv, o parecidos.
-data_emp <- read.csv("GlobalAtlas-16S/CAMDA_2019_EMP_metainformation.tsv", sep = "\t")
+#data <- read_xlsx(path = "~/GlobalAtlas-16S/Dataset_01_22_2018.xlsx", sheet = 1, col_names = TRUE)
+
+
+
+#carga del archivo .csv.
+
+
+data <- read.csv(args[1])
 
 
 #La función kgc::LookupCZ requiere un data frame con 3 columnas la de identificación, y las correspondientes a las coordenadas geográficas. 
-coordinates_emp <- data_emp[,c("SampleID", "latitude_deg", "longitude_deg" )]
 #Se redondean las coordenadas de nuestro dataset a coordenadas en la tabla de referencia kgc::climatezones
-coordinates_emp <- data.frame(coordinates_emp$SampleID , rndCoord.lon = RoundCoordinates(coordinates_emp$longitude_deg) , rndCoord.lat = RoundCoordinates(coordinates_emp$latitude_deg))
+coordinates <- data.frame(data[,1] , rndCoord.lon = RoundCoordinates(data[,2]) , rndCoord.lat = RoundCoordinates(data[,3]))
 #Se agregan los resultdos de la función kgc::LookupCZ de nuestro 
-data_emp$CZ <- LookupCZ(coordinates_emp, res = "course")
+data$Climate_Zone <- LookupCZ(coordinates, res = "course")
 #Se guarda el dataset de nuevo con la nueva columna
-write.csv(data,"GlobalAtlas-16S/CAMDA_2019_EMP_metainformation.csv", row.names = TRUE)
+write.csv(data , args[2], row.names = TRUE)
 
 
 
