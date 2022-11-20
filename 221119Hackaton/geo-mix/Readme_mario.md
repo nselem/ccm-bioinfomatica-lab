@@ -24,3 +24,5 @@ El resultado, guardado en la variable `cz` es el siguiente:
 ~~~
 [1] Dfb
 ~~~
+
+El script de R 221119Hackaton/geo-mix/scripts/2022_11_20_mariojardon_clima_desde_coordenadas.R toma como argumentos un archivo .csv que 
