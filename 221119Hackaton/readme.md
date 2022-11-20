@@ -16,3 +16,5 @@ Aqui pueden documentar sus resultados
 - [Reto Cambda 2020](http://camda2020.bioinf.jku.at/doku.php)
 - [Librería de Clima a partir de coordenadas]()
 - [Librería de tax-id]()
+- [Tutorial Markdown1](https://gist.github.com/sandrabosk/d79bd806c8b1b13ad9af1e590a26deb5)    
+- [Tutorial markdown 2](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)  
