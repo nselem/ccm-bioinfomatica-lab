@@ -8,10 +8,10 @@ La función de kgc que desde dataframes con coordenadas devuelve una zona climá
 
 A continuación se presenta un código con un ejemplo de juguete sobre el uso de esta función.
 
-` library(kgc)
+`library(kgc)`
 
-coordenadas <- data.frame( "IDs" = c(1) , "Longitude" = c(-90) , "Latitude" = c(45) )
+`coordenadas <- data.frame( "IDs" = c(1) , "Longitude" = c(-90) , "Latitude" = c(45) )`
 
-coordenadas <- data.frame(coordenadas$IDs , rndCoord.lon = RoundCoordinates(coordenadas$Longitude) , rndCoord.lat = RoundCoordinates(coordenadas$Latitude))
+`coordenadas <- data.frame(coordenadas$IDs , rndCoord.lon = RoundCoordinates(coordenadas$Longitude) , rndCoord.lat = RoundCoordinates(coordenadas$Latitude))`
 
-cz <- LookupCZ(coordenadas, res = "course") `
+`cz <- LookupCZ(coordenadas, res = "course") `
