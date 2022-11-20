@@ -27,34 +27,18 @@ if (!require(kgc)) install.packages('kgc')
 library(kgc)
 
 
-#library(kgc)
-#install.packages("shiny")
-#install.packages("shinythemes")
-#install.packages("readxl")
-#install.packages("kgc")
-#Librería para leer archivos de excel
-#library(readxl)
-#library(shiny)
-#library(shinythemes)
-#library(kgc)
-
 #Carga de datos
-#Ejemplo de carga de archivo formato excel
-#data <- read_xlsx(path = "~/GlobalAtlas-16S/Dataset_01_22_2018.xlsx", sheet = 1, col_names = TRUE)
-
-
-
 #carga del archivo .csv.
-
-
 data <- read.csv(args[1])
-
 
 #La función kgc::LookupCZ requiere un data frame con 3 columnas la de identificación, y las correspondientes a las coordenadas geográficas. 
 #Se redondean las coordenadas de nuestro dataset a coordenadas en la tabla de referencia kgc::climatezones
+
 coordinates <- data.frame(data[,1] , rndCoord.lon = RoundCoordinates(data[,2]) , rndCoord.lat = RoundCoordinates(data[,3]))
+
 #Se agregan los resultdos de la función kgc::LookupCZ de nuestro 
 data$Climate_Zone <- LookupCZ(coordinates, res = "course")
+
 #Se guarda el dataset de nuevo con la nueva columna
 write.csv(data , args[2], row.names = TRUE)
 
