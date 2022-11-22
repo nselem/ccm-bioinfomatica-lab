@@ -21,6 +21,6 @@ Aqui pueden documentar sus resultados
 
 ## Presentaciones de los equipos  
 - [GeoMix](https://www.canva.com/design/DAFShoxwELk/dVmVKuchUujHErlgn0Hm9w/view?utm_content=DAFShoxwELk&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton#1)  
-- Geo ENES  
+- [Geo ENES](https://drive.google.com/file/d/12RnDbGY9XLRMEK3Sib2W-14txyLDD4m6/view?usp=share_link)  
 - TDA Pangenoma  
 - [TDA Metagenoma](https://docs.google.com/presentation/d/1uMMEU_bR4J6hJ8sH5To15HCsOrlfRlGLFuRq7lW2S8g/edit#slide=id.p)  
