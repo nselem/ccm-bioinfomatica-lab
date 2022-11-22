@@ -20,7 +20,7 @@ Aqui pueden documentar sus resultados
 - [Tutorial markdown 2](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)  
 
 ## Presentaciones de los equipos  
-- GeoMix  
+- [GeoMix](https://www.canva.com/design/DAFShoxwELk/dVmVKuchUujHErlgn0Hm9w/view?utm_content=DAFShoxwELk&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton#1)  
 - Geo ENES  
 - TDA Pangenoma  
 - [TDA Metagenoma](https://docs.google.com/presentation/d/1uMMEU_bR4J6hJ8sH5To15HCsOrlfRlGLFuRq7lW2S8g/edit#slide=id.p)  
