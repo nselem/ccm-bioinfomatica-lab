@@ -18,3 +18,9 @@ Aqui pueden documentar sus resultados
 - [Librería de tax-id](http://etetoolkit.org/docs/2.3/tutorial/tutorial_ncbitaxonomy.html)
 - [Tutorial Markdown1](https://gist.github.com/sandrabosk/d79bd806c8b1b13ad9af1e590a26deb5)    
 - [Tutorial markdown 2](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)  
+
+## Presentaciones de los equipos  
+- GeoMix  
+- Geo ENES  
+- TDA Pangenoma  
+- [TDA Metagenoma](https://docs.google.com/presentation/d/1uMMEU_bR4J6hJ8sH5To15HCsOrlfRlGLFuRq7lW2S8g/edit#slide=id.p)  
