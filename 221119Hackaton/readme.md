@@ -1,4 +1,4 @@
-# Bienvenidos equipos al hackaton de Genómica matemáticas y computación.  
+# Bienvenidos equipos al hackaton MicroAgrobioma de Genómica matemáticas y computación.  
 Aqui pueden documentar sus resultados  
 - [TDA Pangenoma](tda-pangenoma/readme.md)
 - [TDA metagenoma](tda-meta/readme.md)
