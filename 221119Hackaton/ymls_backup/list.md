@@ -1,4 +1,4 @@
 Environments with a yml exported to Alnitak  
 
-- [ ]  metagenomics   
+- [ x]  metagenomics   
 - [ ]  pangenomics   
