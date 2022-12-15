@@ -1,0 +1,44 @@
+name: ncbi-genome-download
+channels:
+  - conda-forge
+  - bioconda
+  - r
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - appdirs=1.4.4=pyh9f0ad1d_0
+  - brotlipy=0.7.0=py36h8f6f2f9_1001
+  - ca-certificates=2022.5.18.1=ha878542_0
+  - certifi=2021.5.30=py36h5fab9bb_0
+  - cffi=1.14.6=py36hd8eec40_1
+  - charset-normalizer=2.0.12=pyhd8ed1ab_0
+  - cryptography=35.0.0=py36hb60f036_0
+  - idna=3.3=pyhd8ed1ab_0
+  - ld_impl_linux-64=2.36.1=hea4e1c9_2
+  - libffi=3.4.2=h7f98852_5
+  - libgcc-ng=12.1.0=h8d9b700_16
+  - libgomp=12.1.0=h8d9b700_16
+  - libnsl=2.0.0=h7f98852_0
+  - libstdcxx-ng=12.1.0=ha89aaad_16
+  - libzlib=1.2.12=h166bdaf_0
+  - ncbi-genome-download=0.3.1=pyh5e36f6f_0
+  - ncurses=6.3=h27087fc_1
+  - openssl=1.1.1o=h166bdaf_0
+  - pip=21.3.1=pyhd8ed1ab_0
+  - pycparser=2.21=pyhd8ed1ab_0
+  - pyopenssl=22.0.0=pyhd8ed1ab_0
+  - pysocks=1.7.1=py36h5fab9bb_3
+  - python=3.6.15=hb7a2778_0_cpython
+  - python_abi=3.6=2_cp36m
+  - readline=8.1.2=h0f457ee_0
+  - requests=2.28.0=pyhd8ed1ab_0
+  - setuptools=58.0.4=py36h5fab9bb_2
+  - sqlite=3.38.5=h4ff8645_0
+  - tk=8.6.12=h27826a3_0
+  - tqdm=4.7.2=py36_0
+  - urllib3=1.26.9=pyhd8ed1ab_0
+  - wheel=0.37.1=pyhd8ed1ab_0
+  - xz=5.2.5=h516909a_1
+  - zlib=1.2.12=h166bdaf_0
+prefix: /opt/anaconda3/envs/ncbi-genome-download
