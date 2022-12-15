@@ -43,7 +43,9 @@ conda deactivate
 done 
 ~~~
 
-Finally, to install the environmment on the Alnitak you need use the command `conda create --name myenv --file spec-file.txt`. The environments installed in Alnitak with this form are the following
+Finally, to install the environmment on the Alnitak you need use the command `conda create --name myenv --file spec-file.txt`. For example to create the **ncbi-genome-download** you need use `conda create --prefix /miniconda3/envs/ncbi-genome-download --file spec-ncbi-genome-download.txt` .
+
+The environments installed in Alnitak with this form are the following
 
 - [ ] DeepBGC_Global
 - [X] GenomeMining_Global
