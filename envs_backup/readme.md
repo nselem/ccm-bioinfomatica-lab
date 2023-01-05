@@ -50,18 +50,18 @@ The environments installed in Alnitak with this form are the following
 - [X] DeepBGC_Global
 - [X] GenomeMining_Global
 - [X] Pangenomics_Global
-- [X] Prokka_Global
+- [X] Prokka_Global    (Andres)
 - [X] TDA
 - [ ] agromicrobiomaPagina
 - [ ] anvio-7.1
 - [X] bigscape
 - [X] corason
-- [X] ete3
+- [X] ete3       (Camila)
 - [ ] evomining-conda
 - [X] metagenomics
 - [X] ncbi-genome-download
 - [ ] paginaInternet
-- [X] qiime2-2021.8
-- [X] quality_assembly_2022
+- [X] qiime2-2021.8    (Karina)
+- [X] quality_assembly_2022  (Claudia)
 - [ ] rnaseq
 - [ ] spades3.11.1
