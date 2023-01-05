@@ -47,21 +47,21 @@ Finally, to install the environmment on the Alnitak you need use the command `co
 
 The environments installed in Alnitak with this form are the following
 
-- [ ] DeepBGC_Global
+- [X] DeepBGC_Global
 - [X] GenomeMining_Global
-- [ ] Pangenomics_Global
-- [ ] Prokka_Global
+- [X] Pangenomics_Global
+- [X] Prokka_Global
 - [X] TDA
 - [ ] agromicrobiomaPagina
 - [ ] anvio-7.1
-- [ ] bigscape
-- [ ] corason
-- [ ] ete3
+- [X] bigscape
+- [X] corason
+- [X] ete3
 - [ ] evomining-conda
 - [X] metagenomics
 - [X] ncbi-genome-download
 - [ ] paginaInternet
-- [ ] qiime2-2021.8
-- [ ] quality_assembly_2022
+- [X] qiime2-2021.8
+- [X] quality_assembly_2022
 - [ ] rnaseq
 - [ ] spades3.11.1
