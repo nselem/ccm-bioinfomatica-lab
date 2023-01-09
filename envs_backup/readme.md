@@ -57,7 +57,7 @@ The environments installed in Alnitak with this form are the following
 - [X] bigscape    (nelly)
 - [X] corason     (nelly)
 - [X] ete3       (Camila)
-- [ ] evomining-conda (Cesar )
+- [X] evomining-conda (Cesar )
 - [X] metagenomics (listo probado kraken haydee)
 - [X] ncbi-genome-download (anton)
 - [X] paginaInternet (Fonty)
