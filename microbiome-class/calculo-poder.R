@@ -1,4 +1,8 @@
-##cargamos la tabla de abundancia
+## Código tomado del libro Statistical analysis of microbiome data with R 
+## Autores Yinglin Xia et al 
+## Ejercicios transcrito por MArio Jardón y Janeth de Anda
+
+## Cargamos la tabla de abundancia
 abund_table = read.csv("ALSG93AGenus.csv",row.names=1, check.names=FALSE)
 abund_table_t<-t(abund_table)
 
@@ -106,3 +110,217 @@ anova (fit)
 
 library(pwr)
 pwr.anova.test(f= 0.23,k=4,n=45:55,sig.level=0.05)
+                
+                
+                
+#Análisis de potencia para comparar un taxón de interés entre grupos. Función power.prop.test()
+
+Se carga una tabla con la abundancia de Butyrivibrio ﬁbrisolvens por muestra. 
+
+
+```{r}
+abund_table_Spe=read.csv("https://raw.githubusercontent.com/MJardon913/Analisis_de_microbioma_en_R/main/Data/ALSG93AButyrivibrioSpecies.csv", row.names=1, check.names=FALSE)
+
+abund_table_Spe<-t(abund_table_Spe)
+```
+
+Las muestras se agrupan según si tuvieron el tratamiento de Butirato o son del grupo de control.
+
+```{r}
+grouping<-data.frame(row.names=rownames(abund_table_Spe),t(as.data.frame(strsplit(rownames(abund_table_Spe),"-"))))
+
+grouping$Group <- with(grouping,ifelse(as.factor(X1)%in%c("B11","B12","B13","B14","B15","D11","D12","D13","D14"),c("Butyrate"), c("Control")))
+
+
+Butyrivibrio_G <-cbind(abund_table_Spe, grouping)
+
+Butyrivibrio_G
+```
+Se agrega una columna que clasifica las muestras según si Butyrivibrio está presente.
+
+```{r}
+Butyrivibrio_G$Present <- ifelse((Butyrivibrio_G$Butyrivibrio > 0),
+"Present","Absent")
+
+Butyrivibrio_G
+```
+
+Se crea una tabla de contingencia según los grupos de muestras y la presencia de Butyrivibrio.
+
+```{r}
+library(MASS)
+tbl = table(Butyrivibrio_G$Group, Butyrivibrio_G$Present)
+tbl
+```
+
+Se calcula la potencia para muestras de tamaño de 10 a 20, valor alfa = 0.05. En este caso p1 es la proporción de muestras con butirato que presentan Butirivibrio y p2 es la misma proporción entre las muestras de control.
+
+```{r}
+power.prop.test(n=10:20, p1=1, p2=.57, sig.level=0.05, power=NULL, alternative=c("one.sided"), strict = FALSE)
+```
+
+#Análisis de potencia usando el test \chi²
+
+Este análisis que se llevará a cabo con la función pwr.chisq.test() desde la tabla de contingencia necesita del cálculo del tamaño del efecto. Para esto se usará la función cramersV().
+
+```{r}
+#install.packages("lsr")
+
+library(lsr)
+
+#Cálculo del tamaño de efecto
+cramersV(tbl)
+```
+
+```{r}
+library(pwr)
+
+pwr.chisq.test(w = 0.3833108, N = 45:60, df = 1, sig.level = 0.05, power = NULL)
+```
+
+También desde las proporciones 1 y .57 podemos hacer un análisis de potencia desde el test de Fisher.
+
+
+```{r}
+install.packages("Exact")
+
+library(Exact)
+
+power.exact.test(1.0, 0.57, 15, 15, method="Fisher")
+```
+#Comparando la frecuencia de todos los taxa con el modelo Dirichlet-multinomial
+
+El paquete HMP contiene la función que será usada para estimar un modelo Dirichlet-multinomial desde nuestros datos.
+
+
+```{r}
+#install.packages("HMP",repo="http://cran.r-project.org", dep=TRUE)
+
+library(HMP)
+```
+
+Cargamos los datos con frecuencias por género de cinco muestras con tratamiento de Butirato y de cinco muestras del grupo control.
+
+```{r}
+Buty=read.csv("https://raw.githubusercontent.com/MJardon913/Analisis_de_microbioma_en_R/main/Data/ALSG93A3.5mButyrateGenus.csv",row.names=1,
+check.names=FALSE)
+
+NOButy=read.csv("https://raw.githubusercontent.com/MJardon913/Analisis_de_microbioma_en_R/main/Data/ALSG93A3.5mNoButyrateGenus.csv",row.names=1, check.names=FALSE)
+
+head(Buty)
+head(NOButy)
+```
+Usamos las función DM.MoM para obtener los parámetros de ambos modelos Dirchlet-multinomial.
+
+
+```{r}
+Buty_t <- t(Buty)
+NOButy_t <- t(NOButy)
+
+fit_Buty <- DM.MoM(Buty_t);fit_NOButy <- DM.MoM(NOButy_t)
+
+```
+
+##Análisis por composición de taxa
+
+Con la función MC.Xdc.statistics() se llevará a cabo este análisis. Dicha función necesita especificar la cantidad de experimentos MonteCarlo = numMC, y el número de reads por muestra = group_Nrs
+
+```{r}
+numMC <- 1000
+nrsGrp1 <- rep(1000, 10)
+nrsGrp2 <- rep(1000, 10)
+group_Nrs <- list(nrsGrp1, nrsGrp2)
+```
+
+De este modo se calcula el error tipo 1.
+
+```{r}
+alphap <- fit_Buty$gamma
+pval1 <- MC.Xdc.statistics(group_Nrs, numMC, alphap, "hnull")
+pval1
+```
+De este modo se calcula la potencia. 
+
+```{r}
+alphap <- rbind(fit_Buty$gamma, fit_NOButy$gamma)
+pval2 <- MC.Xdc.statistics(group_Nrs, numMC, alphap)
+pval2
+```
+
+
+##Análisis RAD
+
+En este caso se filtrarán las muestras con los diez taxa más abundantes, declarando al resto como "other".
+
+```{r}
+filter_Buty<- Data.filter(Buty_t, "sample", 1000, 10)
+head(filter_Buty)
+
+filter_NOButy<- Data.filter(NOButy_t, "sample", 1000, 10)
+head(filter_NOButy)
+```
+
+
+Se entrenan modelos Dirichlet-multinomial con los datos filtrados
+
+```{r}
+fit_Buty <- DM.MoM(filter_Buty);fit_NOButy <- DM.MoM(filter_NOButy)
+```
+
+
+Del siguiente modo podemos ver los parámetros de estos modelos.
+
+
+```{r}
+fit_Buty$pi
+fit_NOButy$pi
+fit_Buty$theta
+fit_NOButy$theta
+
+```
+
+```{r}
+pi0 <- fit_Buty$pi
+group_theta <- c(0.007523, 0.01615)
+```
+
+De este modo podemos calcular el error tipo 1.
+
+```{r}
+pval1 <- MC.Xmc.statistics(group_Nrs, numMC, pi0, group.theta=group_theta, type="hnull")
+pval1
+```
+
+Así podemos calcular la potencia. 
+
+
+```{r}
+group_pi <- rbind(fit_Buty$pi, fit_NOButy$pi)
+pval2 <- MC.Xmc.statistics(group_Nrs, numMC, pi0, group_pi, group_theta)
+pval2
+```
+Otra función que se puede usar para estos cálculos es la función MC.Xmcupo.statistics.
+Para el error tipo 1:
+
+```{r}
+pval1 <- MC.Xmcupo.statistics(group_Nrs, numMC, pi0, group.theta=group_theta, type="hnull")
+pval1
+```
+
+Para la potencia:
+
+```{r}
+pval2 <- MC.Xmcupo.statistics(group_Nrs, numMC, group.pi=group_pi, group.theta=group_theta)
+pval2
+```
+
+##Cálculo del tamaño del efecto
+
+
+```{r}
+group_data <- list(filter_Buty, filter_NOButy)
+effect <- Xmcupo.effectsize(group_data)
+effect
+```
+
+
