@@ -2,12 +2,12 @@ The enviroments from Betterlab are [file](/envs_backup/list_envs.txt)
 
 - base
 - DeepBGC_Global  
-[ ] GenomeMining_Global  
+[ ] anvio-7.1 
 [ ] Pangenomics_Global  
 [ ] Prokka_Global  
 - TDA
 - agromicrobiomaPagina  
-[ ] anvio-7.1  
+[ ] GenomeMining_Global  
 [ ] bigscape  
 [ ] corason  
 - ete3
