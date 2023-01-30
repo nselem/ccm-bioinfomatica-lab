@@ -4,7 +4,8 @@ The enviroments from Betterlab are [file](/envs_backup/list_envs.txt)
 - DeepBGC_Global   
 [ ] anvio-7.1   
 [ ] Pangenomics_Global    
-[ ] Prokka_Global    
+[ ] Prokka_Global  
+[ ] ncbi-genome-download  
 - TDA
 - agromicrobiomaPagina  
 [ ] GenomeMining_Global  
@@ -13,7 +14,6 @@ The enviroments from Betterlab are [file](/envs_backup/list_envs.txt)
 - ete3
 - evomining-conda
 - metagenomics
-- ncbi-genome-download
 - paginaInternet
 - qiime2-2021.8
 - quality_assembly_2022
