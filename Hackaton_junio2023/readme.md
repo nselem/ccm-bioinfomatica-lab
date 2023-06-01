@@ -35,7 +35,7 @@ Of course, you are welcome to use your imagination to carry out any side analysi
 
 ## References  
 [ ][Antibiotic resistance and metabolic profiles as functional biomarkers that accurately predict the geographic origin of city metagenomics samples
-](https://biologydirect.biomedcentral.com/articles/10.1186/s13062-019-0246-9)
+](https://biologydirect.biomedcentral.com/articles/10.1186/s13062-019-0246-9)  
 [ ][Forensic Applications of Microbiomics: A Review](https://www.frontiersin.org/articles/10.3389/fmicb.2020.608101/full)  
 [ ][Identification of city specific important bacterial signature for the MetaSUB CAMDA challenge microbiome data](https://link.springer.com/article/10.1186/s13062-019-0243-z)    
 [ ][Editorial: Critical assessment of massive data analysis (CAMDA) annual conference 2021](https://www.frontiersin.org/articles/10.3389/fgene.2023.1154398/full)     
