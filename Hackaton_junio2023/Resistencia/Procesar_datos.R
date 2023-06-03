@@ -4,6 +4,7 @@ library("ggplot2")
 library("igraph")
 library("vegan")
 library(readr)
+library(dplyr)
 library("GUniFrac")
 library("pbkrtest")
 library("phyloseq")
@@ -38,3 +39,13 @@ df_complete_order_relative=cbind(meta,otu_order_relative)
 
 write_csv(df_complete_order_absolute, "data/absolute_order.csv", col_names = TRUE)
 write_csv(df_complete_order_relative, "data/relative_order.csv", col_names = TRUE)
+
+
+amr <- read.delim("/home/shaday/c23/amr/amr-biom.tsv", sep = "\t")
+amr=t(amr)
+nombres_columnas <- amr[1, ]
+colnames(amr) <- nombres_columnas
+amr=data.frame(amr)
+amr <- slice(amr, -1)
+
+write_csv(amr, "data/amr_metadatos.csv", col_names = TRUE)
