@@ -35,7 +35,6 @@ inpath <- paste(inputdir, filename, sep = "")
 #################  Read data ###############################33
 # read biom from reads level
 reads_biom <- import_biom(inpath)
-
 ## Correct names in taxonomic table
 # assign new names
 colnames(reads_biom@tax_table@.Data) <- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
@@ -44,7 +43,7 @@ reads_biom@tax_table@.Data <- substring(reads_biom@tax_table@.Data, 4)
 View(reads_biom@tax_table@.Data)
 
 
-################ Extract  by taxonomic levels --------------------------------------------
+################ Function to Extract  by taxonomic levels --------------------------------------------
 # TEST
 ### PLAN
 # For 
@@ -57,14 +56,7 @@ View(reads_biom@tax_table@.Data)
 
 #  All reads --------------------------------------------------------------
 
-# Phylum  -----------------------------------------------------------------
 # conglomerate to phylum level
-leveling<-"Phylum"
-tax_levels <- c( "Phylum", "Class", "Order", "Family", "Genus")
-
-# Concatenate variable and path
-prefix<-"reads-all"
-phobject<-reads_biom
 # Function to calculate the factorial of a number
 agglomerate <- function(phobject,outdir,leveling,prefix) {
   
@@ -81,60 +73,31 @@ agglomerate <- function(phobject,outdir,leveling,prefix) {
   write.csv(reads.df,file_read_count)
   write.csv(reads_tax.df,file_Dict_count)
 }
-leveling<-"Phylum"
-agglomerate(reads_biom,outdir,leveling,prefix)
-leveling<-"Order"
-agglomerate(reads_biom,outdir,leveling,prefix)
-leveling<-"Class"
-agglomerate(reads_biom,outdir,leveling,prefix)
-leveling<-"Family"
-agglomerate(reads_biom,outdir,leveling,prefix)
-leveling<-"Genus"
-agglomerate(reads_biom,outdir,leveling,prefix)
-##########################################################################################
+
+########## ----------------------------------------------
+# Create a list
+tax_levels <- list("Phylum", "Class", "Order", "Family", "Genus")
+
+# Concatenate variable and path
+prefix<-"reads-all"
+lapply(tax_levels,function(x) agglomerate(reads_biom,outdir,x,prefix))
 
 ###  Archaea and Bacteria ----------------------------------------------------
 readsArchaeaBacteria = subset_taxa(reads_biom, Kingdom %in% c("Archaea","Bacteria"))
 prefix<-"AB"
-leveling<-"Phylum"
-agglomerate(readsArchaeaBacteria,outdir,leveling,prefix)
-leveling<-"Order"
-agglomerate(readsArchaeaBacteria,outdir,leveling,prefix)
-leveling<-"Class"
-agglomerate(readsArchaeaBacteria,outdir,leveling,prefix)
-leveling<-"Family"
-agglomerate(readsArchaeaBacteria,outdir,leveling,prefix)
-leveling<-"Genus"
-agglomerate(readsArchaeaBacteria,outdir,leveling,prefix)
+lapply(tax_levels,function(x) agglomerate(readsArchaeaBacteria,outdir,x,prefix))
 
-###  Eukaryota ----------------------------------------------------
+#### ---------
 readsEukaryota = subset_taxa(reads_biom, Kingdom =="Eukaryota")
 prefix<-"Eukarya"
-leveling<-"Phylum"
-agglomerate(readsEukaryota,outdir,leveling,prefix)
-leveling<-"Order"
-agglomerate(readsEukaryota,outdir,leveling,prefix)
-leveling<-"Class"
-agglomerate(readsEukaryota,outdir,leveling,prefix)
-leveling<-"Family"
-agglomerate(readsEukaryota,outdir,leveling,prefix)
-leveling<-"Genus"
-agglomerate(readsEukaryota,outdir,leveling,prefix)
-
+lapply(tax_levels,function(x) agglomerate(readsEukaryota,outdir,x,prefix))
 
 ###  Viruses ----------------------------------------------------
 readsViruses = subset_taxa(reads_biom, Kingdom =="Viruses")
 prefix<-"Viruses"
-leveling<-"Phylum"
-agglomerate(readsViruses,outdir,leveling,prefix)
-leveling<-"Order"
-agglomerate(readsViruses,outdir,leveling,prefix)
-leveling<-"Class"
-agglomerate(readsViruses,outdir,leveling,prefix)
-leveling<-"Family"
-agglomerate(readsViruses,outdir,leveling,prefix)
-leveling<-"Genus"
-agglomerate(readsViruses,outdir,leveling,prefix)
+lapply(tax_levels,function(x) agglomerate(readsViruses,outdir,x,prefix))
+
+
 ### OPTIONAL PREPROCESSING
 ###Cargar metadatos 
 ### metadata_camda <- read.csv2("/home/camila/GIT/Tesis_Maestria/Data/fresa_solena/Data1/metadata.csv",header =  FALSE, row.names = 1, sep = ",")
