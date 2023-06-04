@@ -60,8 +60,8 @@ View(reads_biom@tax_table@.Data)
 # Function to calculate the factorial of a number
 agglomerate <- function(phobject,outdir,leveling,prefix) {
   
-  file_read_count<-paste(outdir,"read-count_", prefix,"_",leveling, sep = "")
-  file_Dict_count<-paste(outdir,"read-taxDict_", prefix,"_",leveling, sep = "")
+  file_read_count<-paste(outdir,prefix,"_count_", "_",leveling,".csv", sep = "")
+  file_Dict_count<-paste(outdir,prefix,"_taxDict_", "_",leveling,".csv", sep = "")
   
   reads_glom <- tax_glom(phobject, taxrank = leveling)
   #View(reads_glom_phylum@otu_table@.Data)
@@ -79,22 +79,22 @@ agglomerate <- function(phobject,outdir,leveling,prefix) {
 tax_levels <- list("Phylum", "Class", "Order", "Family", "Genus")
 
 # Concatenate variable and path
-prefix<-"reads-all"
-lapply(tax_levels,function(x) agglomerate(reads_biom,outdir,x,prefix))
+prefix0<-"reads"  # label to relate files to filename
+lapply(tax_levels,function(x) agglomerate(reads_biom,outdir,x,prefix0))
 
 ###  Archaea and Bacteria ----------------------------------------------------
 readsArchaeaBacteria = subset_taxa(reads_biom, Kingdom %in% c("Archaea","Bacteria"))
-prefix<-"AB"
+prefix<- paste0(prefix0,"AB")
 lapply(tax_levels,function(x) agglomerate(readsArchaeaBacteria,outdir,x,prefix))
 
 #### ---------
 readsEukaryota = subset_taxa(reads_biom, Kingdom =="Eukaryota")
-prefix<-"Eukarya"
+prefix<- paste0(prefix0,"Eukarya")
 lapply(tax_levels,function(x) agglomerate(readsEukaryota,outdir,x,prefix))
 
 ###  Viruses ----------------------------------------------------
 readsViruses = subset_taxa(reads_biom, Kingdom =="Viruses")
-prefix<-"Viruses"
+prefix<- paste0(prefix0,"Viruses")
 lapply(tax_levels,function(x) agglomerate(readsViruses,outdir,x,prefix))
 
 
