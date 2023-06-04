@@ -195,6 +195,9 @@ Beta_diversity <- function(phy,tax,attribute,distance){
 # ggsave("Barras_Eukaryota_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
 # Barras_Species[2]
 # ggsave("Barras10_Eukaryota_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+Data<- glomToGraph(merge_Eukaryota , 'Family')
+glom <- Data[[1]]
+index_Eukaryota_Family <- estimate_richness(glom)
 Alpha_diversity(merge_Eukaryota , 'Family' , 'ID_city')
 ggsave("DiversidadAlfa_Eukaryota_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
 Beta_diversity(merge_Eukaryota, 'Family' , 'ID_city', 'bray')
@@ -213,6 +216,9 @@ ggsave("DiversidadBeta_Eukaryota_Genus.png", plot = last_plot(), path = "/home/c
 Barras_Species <- Abundance_barras(merge_Bacteria,'Family','ID_city',10.0)
 Barras_Species[1] 
 Barras_Species[2]
+Data <- glomToGraph(merge_Bacteria , 'Family')
+glom <- Data[[1]]
+index_Bacteria_Family <- estimate_richness(glom)
 Alpha_diversity(merge_Bacteria , 'Family' , 'ID_city')
 ggsave("DiversidadAlfa_Bacteria_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
 Beta_diversity(merge_Bacteria, 'Family' , 'ID_city', 'bray')
