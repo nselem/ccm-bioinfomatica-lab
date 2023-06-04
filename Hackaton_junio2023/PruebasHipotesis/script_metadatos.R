@@ -41,7 +41,7 @@ ciudades2 <- as.data.frame(ciudades2)
 
 
 cd <- ciudades2%>%
-  count("City")
+  count(City)
 
 colnames(cd) <- c("City","Freq")
 
