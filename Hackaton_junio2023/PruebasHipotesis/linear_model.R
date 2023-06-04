@@ -41,7 +41,7 @@ models.backward = regsubsets(
   Chao1 ~
     bio01 + bio02 + bio03 + bio04 + bio05 + bio06 + bio07 +
     bio08 + bio09 + bio10 + bio11 + bio12 + bio13 + bio14 +
-    bio15 + bio16 + bio17 + bio18 + bio19 + year,
+    bio15 + bio16 + bio17 + bio18 + bio19 + year + latitude,
   data = data_v1,
   nvmax = 5,
   method = "backward"
@@ -64,7 +64,7 @@ models.forward = regsubsets(
   Chao1 ~
     bio01 + bio02 + bio03 + bio04 + bio05 + bio06 + bio07 +
     bio08 + bio09 + bio10 + bio11 + bio12 + bio13 + bio14 +
-    bio15 + bio16 + bio17 + bio18 + bio19 + year,
+    bio15 + bio16 + bio17 + bio18 + bio19 + year + latitude,
   data = data_v1,
   nvmax = 5,
   method = "forward"
@@ -75,7 +75,7 @@ summary(models.forward)
 ### Fit best resulting model                                                ####
 
 fit.forward = lm(Chao1 ~
-                   bio03 + bio06 + bio07 + bio08 + bio11 +
-                   year,
+                   bio02 + bio06 + bio08 + bio11 + year +
+                   latitude,
                  data = data_v1)
 summary(fit.forward)
