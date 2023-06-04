@@ -54,7 +54,7 @@ idx = {k:0 for k in set(data_y)}
 for i in range(len(data_y)):
   city = data_y[i]
   idx[city] += 1
-  df_e[f"SMOTE_MetaSUB_gCSD16_{city}_{idx[city]:02d}"] = data_x[i]
+  df_e[f"SMOTE_MetaSUB_{city}_{idx[city]:02d}"] = data_x[i]
 
 # -----------------------------------------------------------------------------
 def normalize_data(_df,prefix="",norm="MinMaxScaler"):
