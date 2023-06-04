@@ -1,8 +1,16 @@
-library("phyloseq") 
+library("phyloseq")
+library("ggplot2")
+
 setwd("/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis")
-# lectura dedatosen archivo .biom
-Camda2023 <- import_biom("camda23.biom")
-class(Camda2023 )
+
+# lectura de datos en archivo .biom
+# Camda2023 <- import_biom("/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/camda23.biom")
+# Assembly
+# /home/haydee/CAMDA23/data/c23/taxonomy/camda23-assembly.biom
+Camda2023 <- import_biom("/home/haydee/CAMDA23/data/c23/taxonomy/camda23-assembly.biom")
+# ReadLevel
+# /home/haydee/CAMDA23/data/c23/taxonomy/camda23-readlevel.biom
+class(Camda2023)
 
 # cambio de los nombres de los niveles taxonomicos
 colnames(Camda2023@tax_table@.Data)<- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
@@ -10,56 +18,247 @@ colnames(Camda2023@tax_table@.Data)<- c("Kingdom", "Phylum", "Class", "Order", "
 Camda2023@tax_table@.Data <- substring(Camda2023@tax_table@.Data,4)
 # tabla de taxonomia
 head(Camda2023@tax_table@.Data)
-
 # tabla de otus
 head(Camda2023@otu_table@.Data)
 # colnames(Camda2023@otu_table@.Data) <- substring(colnames(Camda2023@otu_table@.Data),17)
-
 # metadatos
-metadata_Camda2023 <- read.csv2("metadata_camda23.csv",header =  TRUE, row.names = 1, sep = ",")
+# metadata_Camda2023 <- read.csv2("/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/metadata_camda23.csv",header =  TRUE, row.names = 1, sep = ",")
+metadata_Camda2023 <- read.csv2("/home/haydee/CAMDA23/data/metadata-assembly.csv",header =  TRUE, row.names = 1, sep = ",")
 #rownames(metadata_Camda2023) <- sample_names(metadata_Camda2023)
 Camda2023@sam_data <- sample_data(metadata_Camda2023)
+
+Camda2023_df <- psmelt(Camda2023)
+write.csv(Camda2023_df, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Camda2023_dataframe.csv")
+
+## StackBar
+percentages <- transform_sample_counts(Camda2023, function(x) x*100 / sum(x) )
+head(percentages@otu_table@.Data)
+percentages_df <- psmelt(percentages)
+
+## Usaremos un comando llamado unique() para explorar cuántos reinos tenemos. 
+unique(Camda2023@tax_table@.Data[,"Kingdom"])
+
+## Subconjuntos separados por cada reino
+
+## con esto podemos ver cuantos "Eukaryota" tenemos en "Kingdom"
+sum(Camda2023@tax_table@.Data[,"Kingdom"] == "Eukaryota")
+## veremos aqui solo el reino "Eukaryota"
+merge_Eukaryota <-subset_taxa(Camda2023,Kingdom=="Eukaryota")
+merge_Eukaryota_df <- psmelt(merge_Eukaryota)
+write.csv(merge_Eukaryota_df, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Camda2023_merge_Eukaryota.csv")
+
+## cuantos "Bacteria"
+sum(Camda2023@tax_table@.Data[,"Kingdom"] == "Bacteria")
+## veremos aqui solo el reino "Bacteria"
+merge_Bacteria <-subset_taxa(Camda2023,Kingdom=="Bacteria")
+merge_Bacteria_df <- psmelt(merge_Bacteria)
+write.csv(merge_Bacteria_df, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Camda2023_merge_Bacteria.csv")
+
+## cuantos "Archaea"
+sum(Camda2023@tax_table@.Data[,"Kingdom"] == "Archaea")
+## veremos aqui solo el reino "Archaea"
+merge_Archaea<-subset_taxa(Camda2023,Kingdom=="Archaea")
+merge_Archaea_df <- psmelt(merge_Archaea)
+write.csv(merge_Archaea_df, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Camda2023_merge_Archaea.csv")
+
+## cuantos "Viruses"
+sum(Camda2023@tax_table@.Data[,"Kingdom"] == "Viruses")
+## veremos aqui solo el reino "Viruses"
+merge_Viruses<-subset_taxa(Camda2023,Kingdom=="Viruses")
+merge_Viruses_df <- psmelt(merge_Viruses)
+write.csv(merge_Viruses_df, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Camda2023_merge_Viruses.csv")
+
+## funcion de aglomeracion por nivel taxonomico
+glomToGraph<-function(phy,tax){
+  ## creamos el subconjunto dependiendo del linaje taxonomico deseado
+  glom <- tax_glom(phy, taxrank = tax)
+  ## sacamos los porcentajes
+  percentages <- transform_sample_counts(glom, function(x) x*100 / sum(x) )
+  percentages_df <- psmelt(percentages)
+  return(list(glom,percentages,percentages_df))
+}
+
+# percentages_df$Sample<-as.factor(percentages_df$Sample)
+# percentages_df$ID_city<-as.factor(percentages_df$ID_city)
+# # Ordenamos respecto a categoria 
+# percentages_df<-percentages_df[order(percentages_df$ID_city,percentages_df$Sample),]
+# 
+# ggplot(data=percentages_df, aes_string(x='Sample', y='Abundance', fill='Phylum' ,color='ID_city'))  +
+#   geom_bar(aes(), stat="identity", position="stack") +
+#   facet_wrap(~City, scales = "free")+
+#   #scale_x_discrete(limits = rev(levels(percentages_df$Category))) +
+#   labs(title = "Abundance", x='Sample', y='Abundance', color = 'ID_city') +
+#   theme(legend.key.size = unit(0.2, "cm"),
+#         legend.key.width = unit(0.25,"cm"),
+#         legend.position = "bottom",
+#         legend.direction = "horizontal",
+#         legend.title=element_text(size=8, face = "bold"),
+#         legend.text=element_text(size=6),
+#         text = element_text(size=12),
+#         axis.text.x = element_text(angle=90, size=5, hjust=1, vjust=0.5))
+
+Abundance_barras <- function(phy,tax,attribute,abundance_percentage){
+  ##llamar funcion de datos 
+  Data <- glomToGraph(phy,tax)
+  glom <- Data[[1]] #phyloseq
+  percentages <- Data[[2]] #phyloseq
+  percentages_df <- Data[[3]] # dataframe
+  ## Graficamos para cada subconjunto las barras de abundancia
+  plot_barras <- ggplot(data=percentages_df, aes_string(x='Sample', y='Abundance', fill=tax ,color=attribute)) + 
+    scale_colour_manual(values=c('white','black')) +
+    geom_bar(aes(), stat="identity", position="stack") +
+    labs(title = "Abundance", x='Sample', y='Abundance', color = tax) +
+    theme(legend.key.size = unit(0.2, "cm"),
+          legend.key.width = unit(0.25,"cm"),
+          legend.position = "bottom",
+          legend.direction = "horizontal",
+          legend.title=element_text(size=8, face = "bold"),
+          legend.text=element_text(size=6),
+          text = element_text(size=12),
+          axis.text.x = element_text(angle=90, size=5, hjust=1, vjust=0.5))
+  percentages_df$tax<-percentages_df[,ncol(percentages_df)]
+  percentages_df$tax[percentages_df$Abundance < abundance_percentage] <- "Others"
+  percentages_df$tax <- as.factor(percentages_df$tax)
+  plot_percentages <- ggplot(data=percentages_df, aes_string(x='Sample', y='Abundance', fill='tax' ,color=attribute))+
+    scale_colour_manual(values=c('white','black')) +
+    geom_bar(aes(), stat="identity", position="stack") +
+    labs(title = "Abundance", x='Sample', y='Abundance', color = tax) +
+    theme(legend.key.size = unit(0.3, "cm"),
+          legend.key.width = unit(0.5,"cm"),
+          legend.position = "bottom",
+          legend.direction = "horizontal",
+          legend.title=element_text(size=10, face = "bold"),
+          legend.text=element_text(size=8),
+          text = element_text(size=12),
+          axis.text.x = element_text(angle=90, size=5, hjust=1, vjust=0.5))
+  return(list(plot_barras,plot_percentages))
+}
 
 ## diversidad alfa
 index = estimate_richness(Camda2023)
 index
+write.csv(index, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/indices_Alfa.csv")
 
-plot_richness(physeq = Camda2023, measures = c("Observed","Chao1","Shannon","simpson"))
-plot_richness(physeq = Camda2023, measures = c("Observed","Chao1","Shannon","simpson"),x = "ID_city", color = "ID_city") 
+alpha_div_plot <- plot_richness(physeq = Camda2023, measures = c("Observed","Chao1","Shannon","simpson"))
+alpha_div_plot
+ggsave("DiversidadAlfa.png", plot = alpha_div_plot, path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG" , width = 30, height = 15, dpi = 300, units = "cm")
+alpha_div_plot_city <- plot_richness(physeq = Camda2023, measures = c("Observed","Chao1","Shannon","simpson"),x = "ID_city", color = "ID_city") 
+alpha_div_plot_city
+ggsave("DiversidadAlfa_City.png", plot = alpha_div_plot_city, path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+alpha_div_plot_climate <- plot_richness(physeq = Camda2023, measures = c("Observed","Chao1","Shannon","simpson"),x = "Climate", color = "Climate") 
+alpha_div_plot_climate
+ggsave("DiversidadAlfa_Climate.png", plot = alpha_div_plot_climate, path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+
+# funcion automatizada de alfa diversidad
+Alpha_diversity <- function(phy,tax,attribute){
+  ## llamamos la funcion que crea los dataset
+  Data <- glomToGraph(phy,tax)
+  glom <- Data[[1]]
+  percentages <- Data[[2]]
+  percentages_df <- Data[[3]]
+  ## Alfa diversidad
+  plot_alpha <- plot_richness(physeq = glom, measures = c("Observed","Chao1","Shannon","simpson"),x = attribute, color = attribute) 
+  return(plot_alpha)
+}
 
 ## diversidad beta
-percentages <- transform_sample_counts(Camda2023, function(x) x*100 / sum(x) )
-head(percentages@otu_table@.Data)
 meta_ord <- ordinate(physeq = percentages, method = "NMDS", distance = "bray") 
+
 plot_ordination(physeq = percentages, ordination = meta_ord, color = "ID_city") +
   geom_text(mapping = aes(label = colnames(Camda2023@otu_table@.Data)), size = 3, vjust = 1.5)
+ggsave("DiversidadBeta_City.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
 
-#####################################################################################################################
+plot_ordination(physeq = percentages, ordination = meta_ord, color = "Climate") +
+  geom_text(mapping = aes(label = colnames(Camda2023@otu_table@.Data)), size = 3, vjust = 1.5)
+ggsave("DiversidadBeta_Climate.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
 
-## StackBar
+# funcion automatizada para diversidad beta
+Beta_diversity <- function(phy,tax,attribute,distance){
+  Data <- glomToGraph(phy,tax)
+  glom <- Data[[1]]
+  #CREAR UN GLOM AL 10%
+  percentages <- Data[[2]]
+  percentages_df <- Data[[3]]
+  ## Beta diversidad 
+  meta_ord <- ordinate(physeq = percentages, method = "NMDS", distance = distance) 
+  plot_beta <- plot_ordination(physeq = percentages, ordination = meta_ord, color = attribute) +
+    geom_text(mapping = aes(label = colnames(phy@otu_table@.Data)), size = 3, vjust = 1.5)
+  return(plot_beta)
+}
 
-percentages_df <- psmelt(percentages)
+### Graficas por Familia y Género, para cada uno de los reinos
 
-# Ahora vamos a ordenar el data frame, para que nos quede en el orden que queremos graficar
-percentages_df$Sample<-as.factor(percentages_df$Sample)
-percentages_df$category<-as.factor(percentages_df$ID_city)
-# Ordenamos respecto a categoria 
-percentages_df<-percentages_df[order(percentages_df$ID_city,percentages_df$Sample),]
+##-----------Eukaryota
+###-----------Family
+# Barras_Species <- Abundance_barras(merge_Eukaryota,'Family','ID_city',10.0)
+# Barras_Species[1] 
+# ggsave("Barras_Eukaryota_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+# Barras_Species[2]
+# ggsave("Barras10_Eukaryota_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+Alpha_diversity(merge_Eukaryota , 'Family' , 'ID_city')
+ggsave("DiversidadAlfa_Eukaryota_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+Beta_diversity(merge_Eukaryota, 'Family' , 'ID_city', 'bray')
+ggsave("DiversidadBeta_Eukaryota_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+###-----------Genero 
+Barras_Species <- Abundance_barras(merge_Eukaryota,'Genus','ID_city',10.0)
+Barras_Species[1] 
+Barras_Species[2]
+Alpha_diversity(merge_Eukaryota , 'Genus' , 'ID_city')
+ggsave("DiversidadAlfa_Eukaryota_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+Beta_diversity(merge_Eukaryota, 'Genus' , 'ID_city', 'bray')
+ggsave("DiversidadBeta_Eukaryota_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
 
-library("ggplot2")
-ggplot(data=percentages_df, aes_string(x='Sample', y='Abundance', fill='Phylum' ,color='ID_city'))  +
-  #scale_colour_manual(values=c('cyan','pink','yellow')) +
-  geom_bar(aes(), stat="identity", position="stack") +
-  #scale_x_discrete(limits = rev(levels(percentages_df$Category))) +
-  labs(title = "Abundance", x='Sample', y='Abundance', color = 'ID_city') +
-  theme(legend.key.size = unit(0.2, "cm"),
-        legend.key.width = unit(0.25,"cm"),
-        legend.position = "bottom",
-        legend.direction = "horizontal",
-        legend.title=element_text(size=8, face = "bold"),
-        legend.text=element_text(size=6),
-        text = element_text(size=12),
-        axis.text.x = element_text(angle=90, size=5, hjust=1, vjust=0.5))
+##-----------Bacteria
+###-----------Family
+Barras_Species <- Abundance_barras(merge_Bacteria,'Family','ID_city',10.0)
+Barras_Species[1] 
+Barras_Species[2]
+Alpha_diversity(merge_Bacteria , 'Family' , 'ID_city')
+ggsave("DiversidadAlfa_Bacteria_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+Beta_diversity(merge_Bacteria, 'Family' , 'ID_city', 'bray')
+ggsave("DiversidadBeta_Bacteria_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+###-----------Genero 
+Barras_Species <- Abundance_barras(merge_Bacteria,'Genus','ID_city',10.0)
+Barras_Species[1] 
+Barras_Species[2]
+Alpha_diversity(merge_Bacteria , 'Genus' , 'ID_city')
+ggsave("DiversidadAlfa_Bacteria_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+Beta_diversity(merge_Bacteria, 'Genus' , 'ID_city', 'bray')
+ggsave("DiversidadBeta_Bacteria_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
 
+##-----------Archaea
+###-----------Family
+Barras_Species <- Abundance_barras(merge_Archaea,'Family','ID_city',10.0)
+Barras_Species[1] 
+Barras_Species[2]
+Alpha_diversity(merge_Archaea , 'Family' , 'ID_city')
+ggsave("DiversidadAlfa_Archaea_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+Beta_diversity(merge_Archaea, 'Family' , 'ID_city', 'bray')
+ggsave("DiversidadBeta_Archaea_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+###-----------Genero 
+Barras_Species <- Abundance_barras(merge_Archaea,'Genus','ID_city',10.0)
+Barras_Species[1] 
+Barras_Species[2]
+Alpha_diversity(merge_Archaea , 'Genus' , 'ID_city')
+ggsave("DiversidadAlfa_Archaea_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+Beta_diversity(merge_Archaea, 'Genus' , 'ID_city', 'bray')
+ggsave("DiversidadBeta_Archaea_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
 
+##-----------Viruses
+###-----------Family
+Barras_Species <- Abundance_barras(merge_Viruses,'Family','ID_city',10.0)
+Barras_Species[1] 
+Barras_Species[2]
+Alpha_diversity(merge_Viruses , 'Family' , 'ID_city')
+ggsave("DiversidadAlfa_Viruses_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+Beta_diversity(merge_Viruses, 'Family' , 'ID_city', 'bray')
+ggsave("DiversidadBeta_Viruses_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+###-----------Genero 
+Barras_Species <- Abundance_barras(merge_Viruses,'Genus','ID_city',10.0)
+Barras_Species[1] 
+Barras_Species[2]
+Alpha_diversity(merge_Viruses , 'Genus' , 'ID_city')
+ggsave("DiversidadAlfa_Viruses_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+Beta_diversity(merge_Viruses, 'Genus' , 'ID_city', 'bray')
+ggsave("DiversidadBeta_Viruses_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
 
