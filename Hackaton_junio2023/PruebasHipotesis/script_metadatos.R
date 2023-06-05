@@ -41,7 +41,7 @@ ciudades2 <- as.data.frame(ciudades2)
 
 
 cd <- ciudades2%>%
-  count("City")
+  count(City)
 
 colnames(cd) <- c("City","Freq")
 
@@ -53,6 +53,12 @@ View(coord)
 
 
 
+ciudades3 <- arrange(ciudades2, City)
+  
+coord <- arrange(coord, ID_city)  
+cd <- arrange(cd, City)
+
+  
 cds <- coord %>% 
   filter(ID_city %in% unique(cd$City)) %>%
   mutate("Freq" = cd$Freq)
@@ -62,9 +68,9 @@ citys <- cds[rep(row.names(cds), cds$Freq), 1:4]
 
 
 
-colnames(ciudades2)[2] <- "ID_city"
+colnames(ciudades3)[2] <- "ID_city"
 
-citys <- cbind(ciudades2$ID,citys, ciudades2$Year)
+citys <- cbind(ciudades3$ID,citys, ciudades3$Year)
 
 
 colnames(citys)[1] <- "ID"

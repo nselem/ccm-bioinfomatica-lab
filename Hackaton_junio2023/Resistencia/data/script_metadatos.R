@@ -12,7 +12,7 @@ setwd("~/CAMDA23/completos")
 # Cargar archivo .biom
 
 
-raw_metagenomes <- import_biom("camda23.biom")
+raw_metagenomes <- import_biom("~/c23/taxonomy/read_365.biom")
 raw_metagenomes@tax_table@.Data <- substring(raw_metagenomes@tax_table@.Data, 4)
 colnames(raw_metagenomes@tax_table@.Data)<- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
 View(raw_metagenomes@tax_table@.Data)
