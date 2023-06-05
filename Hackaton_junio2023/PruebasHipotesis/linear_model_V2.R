@@ -24,12 +24,12 @@ corrplot.mixed(covar,
 
 
 #   ____________________________________________________________________________
-#   Multiple linear regression Chao1,Fisher, Observed, ACE, Shannon y Simpson                                              ####
+#   Multiple linear regression Chao1, Shannon, Fisher, Simpson, ACE y Observed ####
 
 #######################################################
 #######    Multiple linear regression #################
-#######   Chao1,Fisher, Observed,     #################
-#######   ACE, Shannon y Simpson      #################
+#######   Chao1, Shannon, Fisher,     #################
+#######   Simpson, ACE y Observed     #################
 #######################################################
 
 full.model = lm(
@@ -73,6 +73,341 @@ full.model = lm(
   data = data_v1
 )
 summary(full.model)
+#######################################################
+#######################################################
+#######   ANALISIS DEMOGRAFICOS               #########
+#######################################################
+#######################################################
+#######################################################
+
+##  ............................................................................
+#   ____________________________________________________________________________
+#   Multiple linear regression Chao1                                              ####
+
+full.model = lm(
+  Chao1 ~
+    population + 
+    population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1
+)
+summary(full.model)
+
+##  ............................................................................
+##  Backward variable selection                                             ####
+
+models.backward = regsubsets(
+  Chao1 ~
+    population + population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1,
+  nvmax = 3,
+  method = "backward"
+)
+summary(models.backward)
+
+### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
+### Fit best resulting model                                                ####
+
+fit.backward = lm(Chao1 ~
+                    population.density + prec_june,
+                  data = data_v1)
+summary(fit.backward)
+
+##  ............................................................................
+##  Forward variable selection                                              ####
+
+models.forward = regsubsets(
+  Chao1 ~
+    population + 
+    population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1,
+  nvmax = 2,
+  method = "forward"
+)
+summary(models.forward)
+
+### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
+### Fit best resulting model                                                ####
+
+fit.forward = lm(Chao1 ~
+                   population.density +
+                   prec_june,
+                 data = data_v1)
+summary(fit.forward)
+
+###############################################################################################
+
+#   Multiple linear regression Shannon                                              ####
+
+full.model = lm(
+  Shannon ~
+    population + 
+    population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1
+)
+summary(full.model)
+
+##  ............................................................................
+##  Backward variable selection                                             ####
+
+models.backward = regsubsets(
+  Shannon ~
+    population + 
+    population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1,
+  nvmax = 3,
+  method = "backward"
+)
+summary(models.backward)
+
+### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
+### Fit best resulting model                                                ####
+
+fit.backward = lm(Shannon ~
+                    population + prec_june,
+                  data = data_v1)
+summary(fit.backward)
+
+##  ............................................................................
+##  Forward variable selection                                              ####
+
+models.forward = regsubsets(
+  Shannon ~
+    population + 
+    population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1,
+  nvmax = 2,
+  method = "forward"
+)
+summary(models.forward)
+
+### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
+### Fit best resulting model                                                ####
+
+fit.forward = lm(Shannon ~
+                  population + prec_june,
+                 data = data_v1)
+summary(fit.forward)
+
+###############################################################################################
+
+#   Multiple linear regression Simpson                                             ####
+
+full.model = lm(
+  Simpson ~
+    population + 
+    population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1
+)
+summary(full.model)
+
+##  ............................................................................
+##  Backward variable selection                                             ####
+
+models.backward = regsubsets(
+  Simpson ~
+    population + 
+    population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1,
+  nvmax = 2,
+  method = "backward"
+)
+summary(models.backward)
+
+### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
+### Fit best resulting model                                                ####
+
+fit.backward = lm(Simpson ~
+                    population + population.density,
+                  data = data_v1)
+summary(fit.backward)
+
+##  ............................................................................
+##  Forward variable selection                                              ####
+
+models.forward = regsubsets(
+  Simpson ~
+    population + 
+    population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1,
+  nvmax = 2,
+  method = "forward"
+)
+summary(models.forward)
+
+### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
+### Fit best resulting model                                                ####
+
+fit.forward = lm(Simpson ~
+                   population + 
+                   population.density,
+                 data = data_v1)
+summary(fit.forward)
+
+###############################################################################################
+
+#   Multiple linear regression Fisher                                            ####
+
+full.model = lm(
+  Fisher ~
+    population + 
+    population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1
+)
+summary(full.model)
+
+##  ............................................................................
+##  Backward variable selection                                             ####
+
+models.backward = regsubsets(
+  Fisher ~
+    population + 
+    population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1,
+  nvmax = 2,
+  method = "backward"
+)
+summary(models.backward)
+
+### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
+### Fit best resulting model                                                ####
+
+fit.backward = lm(Fisher ~
+                    population.density + prec_june,
+                  data = data_v1)
+summary(fit.backward)
+
+##  ............................................................................
+##  Forward variable selection                                              ####
+
+models.forward = regsubsets(
+  Fisher ~
+    population + 
+    population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1,
+  nvmax = 2,
+  method = "forward"
+)
+summary(models.forward)
+
+### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
+### Fit best resulting model                                                ####
+
+fit.forward = lm(Fisher ~
+                   population.density + prec_june,
+                 data = data_v1)
+summary(fit.forward)
+###############################################################################################
+
+# Multiple linear regression Observed                                            ####
+
+full.model = lm(
+  Observed ~
+    population + 
+    population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1
+)
+summary(full.model)
+
+##  ............................................................................
+##  Backward variable selection                                             ####
+
+models.backward = regsubsets(
+  Observed ~
+    population + 
+    population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1,
+  nvmax = 2,
+  method = "backward"
+)
+summary(models.backward)
+
+### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
+### Fit best resulting model                                                ####
+
+fit.backward = lm(Observed ~
+                    population.density +
+                    prec_june,
+                  data = data_v1)
+summary(fit.backward)
+
+##  ............................................................................
+##  Forward variable selection                                              ####
+
+models.forward = regsubsets(
+  Observed ~
+    population + 
+    population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1,
+  nvmax = 2,
+  method = "forward"
+)
+summary(models.forward)
+
+### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
+### Fit best resulting model                                                ####
+
+fit.forward = lm(Observed ~
+                   population.density + 
+                   prec_june,
+                 data = data_v1)
+summary(fit.forward)
+
+###############################################################################################
+
+#   Multiple linear regression ACE                                            ####
+
+full.model = lm(
+  ACE ~
+    population + 
+    population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1
+)
+summary(full.model)
+
+##  ............................................................................
+##  Backward variable selection                                             ####
+
+models.backward = regsubsets(
+  ACE ~
+    population + 
+    population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1,
+  nvmax = 2,
+  method = "backward"
+)
+summary(models.backward)
+
+### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
+### Fit best resulting model                                                ####
+
+fit.backward = lm(ACE ~
+                    population.density +
+                    prec_june,
+                  data = data_v1)
+summary(fit.backward)
+
+##  ............................................................................
+##  Forward variable selection                                              ####
+
+models.forward = regsubsets(
+  ACE ~
+    population + 
+    population.density + tmin_june + tmax_june + prec_june,
+  data = data_v1,
+  nvmax = 2,
+  method = "forward"
+)
+summary(models.forward)
+
+### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
+### Fit best resulting model                                                ####
+
+fit.forward = lm(ACE ~
+                   population + 
+                   prec_june,
+                 data = data_v1)
+summary(fit.forward)
+
 
 #######################################################
 #######################################################
@@ -487,8 +822,8 @@ summary(models.backward)
 ### Fit best resulting model                                                ####
 
 fit.backward = lm(Chao1 ~
-                    bio01 + bio03 + bio04 + bio05 + bio07 +
-                    bio08,
+                    bio03 + bio04 + bio07 + bio12 + bio14 +
+                    bio15,
                   data = data_v1)
 summary(fit.backward)
 
@@ -510,7 +845,7 @@ summary(models.forward)
 ### Fit best resulting model                                                ####
 
 fit.forward = lm(Chao1 ~
-                   bio03 + bio06 + bio07 + bio08 + bio11 +
+                   bio02 + bio12 + bio14 + bio16 + bio17 +
                    year,
                  data = data_v1)
 summary(fit.forward)
@@ -546,8 +881,8 @@ summary(models.backward)
 ### Fit best resulting model                                                ####
 
 fit.backward = lm(Shannon ~
-                    bio05 + bio07 + bio11 + bio12 + bio14 +
-                    bio15,
+                    bio01 + bio02 + bio05 + bio10 + bio11 +
+                    year,
                   data = data_v1)
 summary(fit.backward)
 
@@ -569,7 +904,7 @@ summary(models.forward)
 ### Fit best resulting model                                                ####
 
 fit.forward = lm(Shannon ~
-                   bio02 + bio03 + bio07 + bio08 + bio10 + bio19 +
+                   bio03 + bio04 + bio08 + bio18 + bio19 +
                    year,
                  data = data_v1)
 summary(fit.forward)
@@ -605,8 +940,8 @@ summary(models.backward)
 ### Fit best resulting model                                                ####
 
 fit.backward = lm(Simpson ~
-                    bio05 + bio06 + bio07 + bio08 + bio13 +
-                    bio15,
+                    bio04 + bio05 + bio09 + bio10 + bio11 +
+                    year,
                   data = data_v1)
 summary(fit.backward)
 
@@ -628,7 +963,7 @@ summary(models.forward)
 ### Fit best resulting model                                                ####
 
 fit.forward = lm(Simpson ~
-                   bio02 + bio03 + bio04 + bio18 + bio19 + 
+                   bio03 + bio05 + bio08 + bio18 + bio19 + 
                    year,
                  data = data_v1)
 summary(fit.forward)
@@ -664,8 +999,8 @@ summary(models.backward)
 ### Fit best resulting model                                                ####
 
 fit.backward = lm(Fisher ~
-                    bio05 + bio07 + bio11 + bio12 + bio14 +
-                    bio15,
+                    bio03 + bio04 + bio05 + bio07 + bio10 +
+                    bio12,
                   data = data_v1)
 summary(fit.backward)
 
@@ -687,8 +1022,8 @@ summary(models.forward)
 ### Fit best resulting model                                                ####
 
 fit.forward = lm(Fisher ~
-                   bio03 + bio06 + bio08 + bio11 + bio19 + 
-                   year,
+                   bio12 + bio14 + bio16 + bio17 + bio18 + 
+                   bio19,
                  data = data_v1)
 summary(fit.forward)
 ###############################################################################################
@@ -722,7 +1057,7 @@ summary(models.backward)
 ### Fit best resulting model                                                ####
 
 fit.backward = lm(Observed ~
-                    bio03 + bio05 + bio07 + bio08 + bio11 +
+                    bio02 + bio03 + bio04 + bio05 + bio10 +
                     bio15,
                   data = data_v1)
 summary(fit.backward)
@@ -745,7 +1080,7 @@ summary(models.forward)
 ### Fit best resulting model                                                ####
 
 fit.forward = lm(Observed ~
-                   bio03 + bio06 + bio08 + bio10 + bio11 + 
+                   bio02 + bio12 + bio14 + bio16 + bio17 + 
                    year,
                  data = data_v1)
 summary(fit.forward)
@@ -781,8 +1116,8 @@ summary(models.backward)
 ### Fit best resulting model                                                ####
 
 fit.backward = lm(ACE ~
-                    bio01 + bio03 + bio04 + bio05 + bio07 +
-                    bio08,
+                    bio03 + bio04 + bio07 + bio12 + bio14 +
+                    bio15,
                   data = data_v1)
 summary(fit.backward)
 
@@ -804,7 +1139,7 @@ summary(models.forward)
 ### Fit best resulting model                                                ####
 
 fit.forward = lm(ACE ~
-                   bio03 + bio06 + bio07 + bio08 + bio11 + 
+                   bio02 + bio12 + bio14 + bio16 + bio17 + 
                    year,
                  data = data_v1)
 summary(fit.forward)
