@@ -9,7 +9,7 @@ We discovered that from the 505 AMR Ids markers from the misterious file only 18
 
 | Gen1  | Function   | Organism   | Gen2   | Function2   | Organims2 |  
 |---|---|---|---|---|---|  
-| chuX  |   |   |shuY  |   |   |  
+| chuX  |   |   |shuX  |   |   |  
 | chuY |   |    |shuY   |   |   |  
 | chuZ  |   |   |shuZ   |   |   |  
 | fliG  |   |   |fliI  |   |   |  
