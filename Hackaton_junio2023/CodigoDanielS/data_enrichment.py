@@ -68,15 +68,15 @@ def normalize_data(_df,prefix="",norm="MinMaxScaler"):
 
   # Start the normalization process
   scaler = scalers[norm]()
-  df_norm = scaler.fit_transform(data)
+  df_norm = scaler.fit_transform(data.T).T
 
   # Save into the original dataframe
   df_o = _df.copy()
   df_o.iloc[:,1:] = df_norm
 
-  # Add new rows to the dataframe with the year of the sample (0:2016, 1:2017)
-  new_row = pd.Series([-1]+[0 if "gCSD16" in h else 1 for h in df_o.columns[1:]], index=df_o.columns)
-  df_o = pd.concat( [new_row.to_frame().T, df_o], ignore_index=True)
+  # # Add new rows to the dataframe with the year of the sample (0:2016, 1:2017)
+  # new_row = pd.Series([-1]+[0 if "gCSD16" in h else 1 for h in df_o.columns[1:]], index=df_o.columns)
+  # df_o = pd.concat( [new_row.to_frame().T, df_o], ignore_index=True)
 
   # Block of prints manhattan like plot -----------------------------------------
   # heatmap of the data as a meshgrid
