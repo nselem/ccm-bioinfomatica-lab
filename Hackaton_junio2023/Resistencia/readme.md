@@ -6,6 +6,17 @@ We discovered that from the 505 AMR Ids markers from the misterious file only 18
 - [pathogenes-refgene](https://www.ncbi.nlm.nih.gov/pathogens/refgene/)   
 - [NCBI-gene](https://www.ncbi.nlm.nih.gov/gene)  
 
+
+![image](https://github.com/nselem/ccm-bioinfomatica-lab/assets/6643162/6ec6a199-f44a-47d1-b55d-0367b4b4c90b)
+Figure 1 Manually curated AMR database, 180 CARD genes, 325 other databases  
+
+![image](https://github.com/nselem/ccm-bioinfomatica-lab/assets/6643162/5bd9afaa-f3d5-4fd7-abf5-d1b21d033101)
+Figure 2. Workflow to produce AMR sample profiles.  
+
+![image](https://github.com/nselem/ccm-bioinfomatica-lab/assets/6643162/c274d9eb-20e5-42a2-8fc5-8b5434486504)
+Figure 3 Example of sample-profile  
+
+
 Table1 Ids that maybe SNPs  
 | Gen1  | Function   | Organism   | Gen2   | Function2   | Organims2 |  
 |---|---|---|---|---|---|  
