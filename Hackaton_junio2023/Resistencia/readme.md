@@ -51,3 +51,12 @@ Table 3 Ids that were not found
 |vactox|	escherichia coli	|	NOT FOUND|  
 |wcly	klebsiella |pneumoniae		NOT FOUND|  
 |wcst	klebsiella |pneumoniae		NOT FOUND|  
+
+To do :
+- [ ] Diana Produce a heatmap with blast comparison for the variants of oxqB/A, with 6 sequences of each numerical group. Describe Table 2.   
+- [ ] Fonty, i) document script order to end with a reproducible workflow (data assemblies will change).  ii) Add a column with the number of contigs per sample. This number will help us to normalice abundances for sample for marker.  
+- [ ] Nelly and Johan Reduce cases for Table1 and Table3.  
+- [ ] Shaday Finish bins 
+- [ ] Anton finish output files for reads.  
+
+
