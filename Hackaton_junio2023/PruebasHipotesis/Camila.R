@@ -24,16 +24,17 @@ head(Camda2023@otu_table@.Data)
 # metadatos
 # metadata_Camda2023 <- read.csv2("/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/metadata_camda23.csv",header =  TRUE, row.names = 1, sep = ",")
 metadata_Camda2023 <- read.csv2("/home/haydee/CAMDA23/data/metadata-assembly.csv",header =  TRUE, row.names = 1, sep = ",")
-#rownames(metadata_Camda2023) <- sample_names(metadata_Camda2023)
+# rownames(metadata_Camda2023) <- sample_names(metadata_Camda2023)
 Camda2023@sam_data <- sample_data(metadata_Camda2023)
 
 Camda2023_df <- psmelt(Camda2023)
 write.csv(Camda2023_df, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Camda2023_dataframe.csv")
 
-## StackBar
 percentages <- transform_sample_counts(Camda2023, function(x) x*100 / sum(x) )
 head(percentages@otu_table@.Data)
 percentages_df <- psmelt(percentages)
+write.csv(percentages_df, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Camda2023_percentages_dataframe.csv")
+
 
 ## Usaremos un comando llamado unique() para explorar cuántos reinos tenemos. 
 unique(Camda2023@tax_table@.Data[,"Kingdom"])
@@ -54,6 +55,11 @@ merge_Bacteria <-subset_taxa(Camda2023,Kingdom=="Bacteria")
 merge_Bacteria_df <- psmelt(merge_Bacteria)
 write.csv(merge_Bacteria_df, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Camda2023_merge_Bacteria.csv")
 
+## Unimos "Eukaryota" y "Bacteria"
+merge_Eukaryota_Bacteria <- subset_taxa(Camda2023, Kingdom %in% c("Eukaryota","Bacteria"))
+merge_Eukaryota_Bacteria_df <- psmelt(merge_Eukaryota_Bacteria)
+write.csv(merge_Eukaryota_Bacteria_df, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Camda2023_merge_Eukaryota_Bacteria.csv")
+
 ## cuantos "Archaea"
 sum(Camda2023@tax_table@.Data[,"Kingdom"] == "Archaea")
 ## veremos aqui solo el reino "Archaea"
@@ -72,12 +78,16 @@ write.csv(merge_Viruses_df, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_jun
 glomToGraph<-function(phy,tax){
   ## creamos el subconjunto dependiendo del linaje taxonomico deseado
   glom <- tax_glom(phy, taxrank = tax)
+  # Eliminar ceros
+  
   ## sacamos los porcentajes
   percentages <- transform_sample_counts(glom, function(x) x*100 / sum(x) )
   percentages_df <- psmelt(percentages)
   return(list(glom,percentages,percentages_df))
 }
 
+
+## Stackbar
 # percentages_df$Sample<-as.factor(percentages_df$Sample)
 # percentages_df$ID_city<-as.factor(percentages_df$ID_city)
 # # Ordenamos respecto a categoria 
@@ -157,8 +167,9 @@ Alpha_diversity <- function(phy,tax,attribute){
   percentages <- Data[[2]]
   percentages_df <- Data[[3]]
   ## Alfa diversidad
+  index <- estimate_richness(glom, measures=c("Observed", "Shannon", "Chao1"))
   plot_alpha <- plot_richness(physeq = glom, measures = c("Observed","Chao1","Shannon","simpson"),x = attribute, color = attribute) 
-  return(plot_alpha)
+  return(list(index,plot_alpha))
 }
 
 ## diversidad beta
@@ -188,83 +199,149 @@ Beta_diversity <- function(phy,tax,attribute,distance){
 
 ### Graficas por Familia y Género, para cada uno de los reinos
 
-##-----------Eukaryota
-###-----------Family
+# ##-----------Eukaryota
+# ###-----------Family
 # Barras_Species <- Abundance_barras(merge_Eukaryota,'Family','ID_city',10.0)
+# Barras_Species[1]
+# ggsave("Barras_Eukaryota_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+# Barras_Species[2]
+# ggsave("Barras10_Eukaryota_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+
+Alpha_diversity_EF <- Alpha_diversity(merge_Eukaryota , 'Family' , 'ID_city')
+index_Eukaryota_Family <- Alpha_diversity_EF[1] 
+write.csv(index_Eukaryota_Family, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/indices_Alfa_Eukaryota_Family.csv")
+DiversidadAlfa_Eukaryota_Family <- Alpha_diversity_EF[2] 
+ggsave("DiversidadAlfa_Eukaryota_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+
+# Beta_diversity(merge_Eukaryota, 'Family' , 'ID_city', 'bray')
+# ggsave("DiversidadBeta_Eukaryota_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+
+# ###-----------Genero 
+# Barras_Species <- Abundance_barras(merge_Eukaryota,'Genus','ID_city',10.0)
+# Barras_Species[1] 
+# Barras_Species[2]
+
+Alpha_diversity_EG <- Alpha_diversity(merge_Eukaryota , 'Genus' , 'ID_city')
+index_Eukaryota_Genus <- Alpha_diversity_EG[1] 
+write.csv(index_Eukaryota_Genus, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/indices_Alfa_Eukaryota_Genus.csv")
+DiversidadAlfa_Eukaryota_Genus <- Alpha_diversity_EG[2] 
+ggsave("DiversidadAlfa_Eukaryota_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+
+# Beta_diversity(merge_Eukaryota, 'Genus' , 'ID_city', 'bray')
+# ggsave("DiversidadBeta_Eukaryota_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+
+# ##-----------Bacteria
+# ###-----------Family
+# Barras_Species <- Abundance_barras(merge_Bacteria,'Family','ID_city',10.0)
+# Barras_Species[1] 
+# Barras_Species[2]
+
+Alpha_diversity_BF <- Alpha_diversity(merge_Bacteria , 'Family' , 'ID_city')
+index_Bacteria_Family <- Alpha_diversity_BF[1] 
+write.csv(index_Bacteria_Family, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/indices_Alfa_Bacteria_Family.csv")
+DiversidadAlfa_Bacteria_Family <- Alpha_diversity_BF[2] 
+ggsave("DiversidadAlfa_Bacteria_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+
+# Beta_diversity(merge_Bacteria, 'Family' , 'ID_city', 'bray')
+# ggsave("DiversidadBeta_Bacteria_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+
+# ###-----------Genero 
+# Barras_Species <- Abundance_barras(merge_Bacteria,'Genus','ID_city',10.0)
+# Barras_Species[1] 
+# Barras_Species[2]
+
+Alpha_diversity_BG <- Alpha_diversity(merge_Bacteria , 'Genus' , 'ID_city')
+index_Bacteria_Genus <- Alpha_diversity_BG[1] 
+write.csv(index_Bacteria_Genus, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/indices_Alfa_Bacteria_Genus.csv")
+DiversidadAlfa_Bacteria_Genus <- Alpha_diversity_BG[2] 
+ggsave("DiversidadAlfa_Bacteria_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+
+# Beta_diversity(merge_Bacteria, 'Genus' , 'ID_city', 'bray')
+# ggsave("DiversidadBeta_Bacteria_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+
+##-----------Eukaryota & Bacteria
+###-----------Family
+# Barras_Species <- Abundance_barras(merge_Eukaryota_Bacteria,'Family','ID_city',10.0)
 # Barras_Species[1] 
 # ggsave("Barras_Eukaryota_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
 # Barras_Species[2]
 # ggsave("Barras10_Eukaryota_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
-Data<- glomToGraph(merge_Eukaryota , 'Family')
-glom <- Data[[1]]
-index_Eukaryota_Family <- estimate_richness(glom)
-Alpha_diversity(merge_Eukaryota , 'Family' , 'ID_city')
-ggsave("DiversidadAlfa_Eukaryota_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
-Beta_diversity(merge_Eukaryota, 'Family' , 'ID_city', 'bray')
-ggsave("DiversidadBeta_Eukaryota_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
-###-----------Genero 
-Barras_Species <- Abundance_barras(merge_Eukaryota,'Genus','ID_city',10.0)
-Barras_Species[1] 
-Barras_Species[2]
-Alpha_diversity(merge_Eukaryota , 'Genus' , 'ID_city')
-ggsave("DiversidadAlfa_Eukaryota_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
-Beta_diversity(merge_Eukaryota, 'Genus' , 'ID_city', 'bray')
-ggsave("DiversidadBeta_Eukaryota_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
 
-##-----------Bacteria
-###-----------Family
-Barras_Species <- Abundance_barras(merge_Bacteria,'Family','ID_city',10.0)
-Barras_Species[1] 
-Barras_Species[2]
-Data <- glomToGraph(merge_Bacteria , 'Family')
-glom <- Data[[1]]
-index_Bacteria_Family <- estimate_richness(glom)
-Alpha_diversity(merge_Bacteria , 'Family' , 'ID_city')
-ggsave("DiversidadAlfa_Bacteria_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
-Beta_diversity(merge_Bacteria, 'Family' , 'ID_city', 'bray')
-ggsave("DiversidadBeta_Bacteria_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+Alpha_diversity_EBF <- Alpha_diversity(merge_Eukaryota_Bacteria , 'Family' , 'ID_city')
+index_Eukaryota_Bacteria_Family <- Alpha_diversity_EBF[1] 
+write.csv(index_Eukaryota_Bacteria_Family, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/indices_Alfa_Eukaryota_Bacteria_Family.csv")
+DiversidadAlfa_Eukaryota_Bacteria_Family <- Alpha_diversity_EBF[2] 
+ggsave("DiversidadAlfa_Eukaryota_Bacteria_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+
+# Beta_diversity(merge_Eukaryota_Bacteria, 'Family' , 'ID_city', 'bray')
+# ggsave("DiversidadBeta_Eukaryota_Bacteria_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
 ###-----------Genero 
-Barras_Species <- Abundance_barras(merge_Bacteria,'Genus','ID_city',10.0)
-Barras_Species[1] 
-Barras_Species[2]
-Alpha_diversity(merge_Bacteria , 'Genus' , 'ID_city')
-ggsave("DiversidadAlfa_Bacteria_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
-Beta_diversity(merge_Bacteria, 'Genus' , 'ID_city', 'bray')
-ggsave("DiversidadBeta_Bacteria_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+# Barras_Species <- Abundance_barras(merge_Eukaryota_Bacteria,'Genus','ID_city',10.0)
+# Barras_Species[1] 
+# Barras_Species[2]
+
+Alpha_diversity_EBG <-  Alpha_diversity(merge_Eukaryota_Bacteria , 'Genus' , 'ID_city')
+index_Eukaryota_Bacteria_Genus <- Alpha_diversity_EBG[1] 
+write.csv(index_Eukaryota_Bacteria_Genus, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/indices_Alfa_Eukaryota_Bacteria_Genus.csv")
+DiversidadAlfa_Eukaryota_Bacteria_Genus <- Alpha_diversity_EBG[2] 
+ggsave("DiversidadAlfa_Eukaryota_Bacteria_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+
+# Beta_diversity(merge_Eukaryota_Bacteria, 'Genus' , 'ID_city', 'bray')
+# ggsave("DiversidadBeta_Eukaryota_Bacteria_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
 
 ##-----------Archaea
 ###-----------Family
-Barras_Species <- Abundance_barras(merge_Archaea,'Family','ID_city',10.0)
-Barras_Species[1] 
-Barras_Species[2]
-Alpha_diversity(merge_Archaea , 'Family' , 'ID_city')
+# Barras_Species <- Abundance_barras(merge_Archaea,'Family','ID_city',10.0)
+# Barras_Species[1] 
+# Barras_Species[2]
+
+Alpha_diversity_AF <- Alpha_diversity(merge_Archaea , 'Family' , 'ID_city')
+index_Archaea_Family <- Alpha_diversity_AF[1] 
+write.csv(index_Archaea_Family, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/indices_Alfa_Archaea_Family.csv")
+DiversidadAlfa_Archaea_Family <- Alpha_diversity_AF[2] 
 ggsave("DiversidadAlfa_Archaea_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
-Beta_diversity(merge_Archaea, 'Family' , 'ID_city', 'bray')
-ggsave("DiversidadBeta_Archaea_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+
+# Beta_diversity(merge_Archaea, 'Family' , 'ID_city', 'bray')
+# ggsave("DiversidadBeta_Archaea_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
 ###-----------Genero 
-Barras_Species <- Abundance_barras(merge_Archaea,'Genus','ID_city',10.0)
-Barras_Species[1] 
-Barras_Species[2]
-Alpha_diversity(merge_Archaea , 'Genus' , 'ID_city')
+# Barras_Species <- Abundance_barras(merge_Archaea,'Genus','ID_city',10.0)
+# Barras_Species[1] 
+# Barras_Species[2]
+
+Alpha_diversity_AG <- Alpha_diversity(merge_Archaea , 'Genus' , 'ID_city')
+index_Archaea_Genus <- Alpha_diversity_AG[1] 
+write.csv(index_Archaea_Genus, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/indices_Alfa_Archaea_Genus.csv")
+DiversidadAlfa_Archaea_Genus <- Alpha_diversity_AG[2] 
 ggsave("DiversidadAlfa_Archaea_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
-Beta_diversity(merge_Archaea, 'Genus' , 'ID_city', 'bray')
-ggsave("DiversidadBeta_Archaea_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+
+# Beta_diversity(merge_Archaea, 'Genus' , 'ID_city', 'bray')
+# ggsave("DiversidadBeta_Archaea_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
 
 ##-----------Viruses
 ###-----------Family
-Barras_Species <- Abundance_barras(merge_Viruses,'Family','ID_city',10.0)
-Barras_Species[1] 
-Barras_Species[2]
-Alpha_diversity(merge_Viruses , 'Family' , 'ID_city')
+# Barras_Species <- Abundance_barras(merge_Viruses,'Family','ID_city',10.0)
+# Barras_Species[1] 
+# Barras_Species[2]
+
+Alpha_diversity_VF <- Alpha_diversity(merge_Viruses , 'Family' , 'ID_city')
+index_Viruses_Family <- Alpha_diversity_VF[1] 
+write.csv(index_Viruses_Family, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/indices_Alfa_Viruses_Family.csv")
+DiversidadAlfa_Viruses_Family <- Alpha_diversity_VF[2] 
 ggsave("DiversidadAlfa_Viruses_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
-Beta_diversity(merge_Viruses, 'Family' , 'ID_city', 'bray')
-ggsave("DiversidadBeta_Viruses_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+
+# Beta_diversity(merge_Viruses, 'Family' , 'ID_city', 'bray')
+# ggsave("DiversidadBeta_Viruses_Family.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
 ###-----------Genero 
-Barras_Species <- Abundance_barras(merge_Viruses,'Genus','ID_city',10.0)
-Barras_Species[1] 
-Barras_Species[2]
-Alpha_diversity(merge_Viruses , 'Genus' , 'ID_city')
+# Barras_Species <- Abundance_barras(merge_Viruses,'Genus','ID_city',10.0)
+# Barras_Species[1] 
+# Barras_Species[2]
+
+Alpha_diversity_VG <- Alpha_diversity(merge_Viruses , 'Genus' , 'ID_city')
+index_Viruses_Genus <- Alpha_diversity_VG[1] 
+write.csv(index_Viruses_Genus, "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/indices_Alfa_Viruses_Genus.csv")
+DiversidadAlfa_Viruses_Genus <- Alpha_diversity_VG[2] 
 ggsave("DiversidadAlfa_Viruses_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
-Beta_diversity(merge_Viruses, 'Genus' , 'ID_city', 'bray')
-ggsave("DiversidadBeta_Viruses_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
+
+# Beta_diversity(merge_Viruses, 'Genus' , 'ID_city', 'bray')
+# ggsave("DiversidadBeta_Viruses_Genus.png", plot = last_plot(), path = "/home/camila/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/PruebasHipotesis/Results_IMG"  , width = 30, height = 15, dpi = 300, units = "cm")
 
