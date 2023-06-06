@@ -17,8 +17,11 @@ We discovered that from the 505 AMR Ids markers from the misterious file only 18
 | papB  |   |   |sfaB   |   |   | 
 | papI  |   |   |sfaC  |   |   |  
 | rmpA |   |    |rmpA2   |   |   |  
-| sfaD  |   |   |SfaG   |   |   |  
-| oxqA  |   |   |oxqA  |   |   |  
-| oxqB |   |    |oxqB   |   |   |  
+| sfaD  |   |   |SfaG   |   |   |   
+
+| Gen1  | Function   | Organism   | Gen2   | Function2   | Organims2 |  
+|---|---|---|---|---|---|  
+| oxqA[3,6,8,10,11]  |   |   |oxqA  |   |   |  
+| oxqB[5,9,14,19,20,22,24,25,32]  |   |   |oxqA  |   |   |   
 
 | Gen1  | Function   | Organism   | Gen2   | Function2   | Organims2 |  
