@@ -9,7 +9,6 @@ Welcome to Cambda 2023!
 [Link Working plan and directory ](https://docs.google.com/document/d/1EU4fH89YuOGa69FY7ZQnr-qhI2kPKHqEZBd-WUE5mvg/edit#)  
 [Aulas virtuales UNAM para entrar al material de curso ](https://aulas-virtuales.cuaieed.unam.mx/)   
 [Link Victor Code]()   
-[AMR table manual curation](https://docs.google.com/spreadsheets/d/1ThsVn6QuIEPvFqe_SwG1PawEghqHgQdvNgGiZd40jXY/edit?usp=sharing)  
 
 
 
