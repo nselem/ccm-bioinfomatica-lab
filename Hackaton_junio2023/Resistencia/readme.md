@@ -5,4 +5,5 @@ So we are constructing our own AMR list
 - [microbigg-e](https://www.ncbi.nlm.nih.gov/pathogens/microbigge/#)  
 - [CARD](https://card.mcmaster.ca/)    
 - [bv-brc](https://www.bv-brc.org/view/SpecialtyGeneList/)    
-- [pathogenes-refgene](https://www.ncbi.nlm.nih.gov/pathogens/refgene/)  
+- [pathogenes-refgene](https://www.ncbi.nlm.nih.gov/pathogens/refgene/)   
+- [NCBI-gene](https://www.ncbi.nlm.nih.gov/gene)  
