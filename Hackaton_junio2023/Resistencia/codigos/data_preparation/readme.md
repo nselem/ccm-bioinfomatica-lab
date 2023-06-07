@@ -10,23 +10,21 @@ Aggregates all the rows belonging to the same class (found in column 7). This cl
 
 - Preprocessing of amr data:
 
--- parse_mistery_samples.py
+- - parse_mistery_samples.py
 
 Parses the mystery sample (amr_patterns.tsv) into a count table. Additionally it can convert the gene names to ARO ids from card if they are found in the database. Output amr_mistery_table.tsv
 
--- parse_missing_amr_to_fasta.py
+- - parse_missing_amr_to_fasta.py
 Parses the table from https://docs.google.com/spreadsheets/d/1ThsVn6QuIEPvFqe_SwG1PawEghqHgQdvNgGiZd40jXY/edit#gid=72799943 exported as tsv into a fasta file. Output missingAmr.fasta
 
--- parse_missing_amr.py
+- - parse_missing_amr.py
 Takes a list of missing amr markers and add from the mystery sample (amr_patterns.tsv) the species it appeared in. Output missingAmr_species.tsv
 
--- blastScript.sh
+- - blastScript.sh
 Blasts the query sequence to all the fasta files in the data folder.
 
--- parse_blast.py
+- - parse_blast.py
 Parses the results from blastScript.sh (blastAll.txt) to generate the count table, requires the list of gene markers (amrMysteryList.txt) to assign the columns
-
-- All research submitted to CAMDA must be previously unpublished original work intended for publication, including procedures and results.
 
 ## References  
 [ ][Antibiotic resistance and metabolic profiles as functional biomarkers that accurately predict the geographic origin of city metagenomics samples
