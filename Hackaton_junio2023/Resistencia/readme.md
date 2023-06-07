@@ -100,7 +100,14 @@ Se implementaron varios métodos de clasificación haciendo los siguientes pasos
        |   14  |     0.50  |    0.33  |    0.40    |     3 |
        |   15  |     0.00  |    0.00  |    0.00    |     3 |
 |---|---|---|---|---|
-    accuracy                           0.74        74
-   macro avg       0.70      0.67      0.66        74
-weighted avg       0.73      0.74      0.71        74
 
+|    accuracy |           |           |    0.74  |      74 |
+|   macro avg |      0.70 |     0.67  |    0.66  |      74 |
+| weighted avg |      0.73 |     0.74 |     0.71 |       74 |
+
+Por hacer, hay varias cosas:
+
+- [ ] Hacer más pruebas con los métodos de reducción de variables para encontrar el conjunto óptimo. 
+- [ ] Probar con algunos métodos de reducción de dimensión para los OTUS (Kernel PCA y UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction)
+- [ ] Hacer la selección de modelos de clasificación con Grid Search y Cross-validation. Esto requiere muchos recursos de cómputo (tiempo y procesamiento)
+- [ ] Usar un enfoque de AutoML (automated machine learning, Plonska et al., 2021) para encontrar un ensamble de clasificadores que incluye su hiperparametrización y oprimización de parámetros.
