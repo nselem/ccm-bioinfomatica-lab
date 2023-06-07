@@ -72,7 +72,8 @@ Se implementaron varios métodos de clasificación haciendo los siguientes pasos
    Para los datos de OTUS, se consideró la tabla completa (365 muestras, 633 variables) estandarizando los datos solamente.
    Se realizó una selección de variables con 3 métodos:
    - Random forests usando como criterio la reducción de impureza con el indice de Gini, obteniendo 150 y 100 variables (Camda_ID_city_reduce_features.ipynb)
-   - Recursive feature elimination (RFE) y con validación cruzada (RFECV), obteniendo 150, 100 y 24 (RFECV) variables (Camda_ID_city_reduce_features.ipynb)
+   - Recursive feature elimination (RFE) y con validación cruzada (RFECV), obteniendo 150, 100 y 24 (RFECV) variables (Camda_ID_city_reduce_features.ipynb).
+   
    Para los datos de conteos, se consideró una representación "bolsa de genes" con pesos TF-IDF (term frecuency, inverse document frequency), y se usaron dos métodos para obtener representaciones vectoriales específicas para matrices sparse:
    - Truncated SVD, obteniendo 150 y 100 componentes (Camda_resistencia_amr_counts.ipynb)
    - Non-Negative Matrix Factorization (NMF), obteniendo 150 y 100 componentes (Camda_resistencia_amr_counts.ipynb)
