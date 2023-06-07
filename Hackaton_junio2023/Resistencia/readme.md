@@ -61,10 +61,13 @@ To do :
 
 ----------------------------------------------------------------------------
 **Modelos de clasificación**
+
 Se cuenta con dos tablas de información:
 - OTUS: relative_order_assembly.csv
 - Genes counts: amr-counts_card_info_20230604.tsv y amr_counts_complete_20230606.tsv
+
 Se implementaron varios métodos de clasificación haciendo los siguientes pasos:
+
 1- Preproceso
    Para los datos de OTUS, se consideró la tabla completa (365 muestras, 633 variables) estandarizando los datos solamente.
    Se realizó una selección de variables con 3 métodos:
@@ -73,14 +76,18 @@ Se implementaron varios métodos de clasificación haciendo los siguientes pasos
    Para los datos de conteos, se consideró una representación "bolsa de genes" con pesos TF-IDF (term frecuency, inverse document frequency), y se usaron dos métodos para obtener representaciones vectoriales específicas para matrices sparse:
    - Truncated SVD, obteniendo 150 y 100 componentes (Camda_resistencia_amr_counts.ipynb)
    - Non-Negative Matrix Factorization (NMF), obteniendo 150 y 100 componentes (Camda_resistencia_amr_counts.ipynb)
+   
  2- Clasificación.
    Se usaron clasificadores basados en random forests (RF), gradient boosting (XGBoost) y redes neuronales (NNET). Estos se ajustaron usando las bases de datos preprocesadas en el paso anterior:
+   
    - $X$: OTUS, $y$: City
    - $X$: Gene counts, $y$: City
    - $X$: OTUS y Gene counts, $y$: City
    - $X$: OTUS reducido, $y$: City [por hacer]
    - $X$: OTUS reducido y Gene counts, $y$: City [por hacer]
-  Hasta ahora, los mejores resultados se obtuvieron con XGBoost
+   - 
+  Hasta ahora, los mejores resultados se obtuvieron con XGBoost ajustado con GridSearch y validación cruzada:
+  
        |        | precision |  recall | f1-score |  support |
        |---|---|---|---|---|
        |    0  |     0.00  |    0.00  |    0.00    |     3 |
@@ -103,6 +110,7 @@ Se implementaron varios métodos de clasificación haciendo los siguientes pasos
        |    accuracy |           |           |    0.74  |      74 |
        |   macro avg |      0.70 |     0.67  |    0.66  |      74 |
        | weighted avg |      0.73 |     0.74 |     0.71 |       74 |
+
 
 Por hacer, hay varias cosas:
 
