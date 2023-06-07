@@ -54,13 +54,11 @@ for(i in 1:5){ #Para realizar las predicciones iteradamente
   
   ### Cálculo de matriz de confusiones
   cm <- confusionMatrix(as.factor(dat_test$y), as.factor(y_pred))
-  avgMMS[i] <- cm$overall[1] #
+  avgMMS[i] <- cm$overall[1] #Vector de efectividad de predicciones
   
 }
 
-avgMMS
-
-mean(avgMMS)
+mean(avgMMS) #Promedio de efectividad de la predicción
 
 #################################################### PowerTransformer
 
