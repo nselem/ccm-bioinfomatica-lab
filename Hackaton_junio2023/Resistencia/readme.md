@@ -99,11 +99,10 @@ Se implementaron varios métodos de clasificación haciendo los siguientes pasos
        |   13  |     0.75  |    0.90  |    0.82    |    10 |
        |   14  |     0.50  |    0.33  |    0.40    |     3 |
        |   15  |     0.00  |    0.00  |    0.00    |     3 |
-|---|---|---|---|---|
-
-|    accuracy |           |           |    0.74  |      74 |
-|   macro avg |      0.70 |     0.67  |    0.66  |      74 |
-| weighted avg |      0.73 |     0.74 |     0.71 |       74 |
+       |---|---|---|---|---|
+       |    accuracy |           |           |    0.74  |      74 |
+       |   macro avg |      0.70 |     0.67  |    0.66  |      74 |
+       | weighted avg |      0.73 |     0.74 |     0.71 |       74 |
 
 Por hacer, hay varias cosas:
 
