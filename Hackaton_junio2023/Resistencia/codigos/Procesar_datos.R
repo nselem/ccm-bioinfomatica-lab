@@ -11,15 +11,16 @@ library("phyloseq")
 library("RColorBrewer")
 library("patchwork")
 #library("BiodiversityR")
-
+#
 setwd("/home/shaday/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/Resistencia")
 
-##
+#### leer archivos de metadatos
 meta <- read_csv("data/metadata-assembly.csv")
 View(meta)
-
+##importar los biom
 Camda=import_biom("data/assembly_365_2.biom")
 Camda2=import_biom("data/read_365_2.biom")
+###Funcion para crea tablas de ambundacias adsolutas y relativas de otus, pegadas con los metadatos
 metadata<- function(biom_file, meta_data){
   biom_file@tax_table@.Data <- substring(biom_file@tax_table@.Data, 4) #cut the firts character of tax
   colnames(biom_file@tax_table@.Data)<- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
@@ -45,11 +46,3 @@ metadata(biom_file = Camda,meta_data = meta)
 
 
 
-amr <- read.delim("data/amr-biom_card_info.tsv", sep = "\t")
-amr=t(amr)
-nombres_columnas <- amr[1, ]
-colnames(amr) <- nombres_columnas
-amr=data.frame(amr)
-amr <- slice(amr, -1)
-
-write_csv(amr, "data/amr_metadatos.csv", col_names = TRUE)
