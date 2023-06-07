@@ -1,4 +1,4 @@
-# Pruebas de hipótesis
+# [Pruebas de hipótesis](https://docs.google.com/document/d/1ZTINZnqSaR87t-sDFoLGSnZTBJ8q7hYOjbY2FF-_8ig/edit?usp=sharing)
 
 ### 2023-06-03
 - Se determinaron objetivos pretendidos en materia de prueba de hipótesis, y cómo encaja el tema con la convocatoria general Camda. Se concluyó que sí constituye materia de interés el determinar si la abundancia tiene asociación con variables ambientales.
