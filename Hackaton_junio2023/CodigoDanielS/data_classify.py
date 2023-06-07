@@ -15,7 +15,7 @@ from matplotlib import pyplot as plt
 
 # Load the dataset
 VERSION = "original"
-SCALER = "QuantileTransformer"
+SCALER = "PowerTransformer"
 df = pd.read_csv(f"Hackaton_junio2023/CodigoDanielS/dta_{VERSION}_{SCALER}.tsv", sep='\t', header=0)
 
 # 5-folds column selection
@@ -130,7 +130,10 @@ if __name__ == "__main__":
     "svc_poly": SVC(kernel='poly', gamma='auto', C=1, random_state=42),
     "mlpc_200": MLPClassifier(hidden_layer_sizes=(200,))
   }
+  results = {}
   for alg in algo:
+    # Log the beginning of the classification
+    print(f"Classification using {alg}")
     # Initialize variables
     c_acc = 0
     c_f1 = 0
@@ -149,7 +152,19 @@ if __name__ == "__main__":
     fig.suptitle(f"{VERSION} - {SCALER} (F1={c_f1/N:.3f}, ACC={c_acc/N:.3f}) - {alg}")
     # Save the plot
     plt.savefig(f"Hackaton_junio2023/CodigoDanielS/img_{VERSION}_{SCALER}_{alg}.png")
+    results[alg] = (c_f1/N, c_acc/N, alg, fig)
     plt.pause(0.1)
+
+  # Sort by F1 score and accuracy as a secondary key
+  results = {k:results[k] for k in sorted(results, key=lambda x: (results[x][0],results[x][1]), reverse=True)}
+  # save the best 2 models
+  for i,alg in enumerate(results):
+    if i<2:
+      # score as 4 digits integer
+      score = int(results[alg][0]*10000)
+      results[alg][-1].savefig(f"Hackaton_junio2023/CodigoDanielS/imgSc{score}_{VERSION}_{SCALER}_{alg}.png")
+    else:
+      break
 
   plt.show()
   pass
