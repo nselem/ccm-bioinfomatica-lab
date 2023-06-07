@@ -59,4 +59,48 @@ To do :
 - [ ] Shaday Finish bins 
 - [ ] Anton finish output files for reads.  
 
+----------------------------------------------------------------------------
+**Modelos de clasificación**
+Se cuenta con dos tablas de información:
+- OTUS: relative_order_assembly.csv
+- Genes counts: amr-counts_card_info_20230604.tsv y amr_counts_complete_20230606.tsv
+Se implementaron varios métodos de clasificación haciendo los siguientes pasos:
+1- Preproceso
+   Para los datos de OTUS, se consideró la tabla completa (365 muestras, 633 variables) estandarizando los datos solamente.
+   Se realizó una selección de variables con 3 métodos:
+   - Random forests usando como criterio la reducción de impureza con el indice de Gini, obteniendo 150 y 100 variables (Camda_ID_city_reduce_features.ipynb)
+   - Recursive feature elimination (RFE) y con validación cruzada (RFECV), obteniendo 150, 100 y 24 (RFECV) variables (Camda_ID_city_reduce_features.ipynb)
+   Para los datos de conteos, se consideró una representación "bolsa de genes" con pesos TF-IDF (term frecuency, inverse document frequency), y se usaron dos métodos para obtener representaciones vectoriales específicas para matrices sparse:
+   - Truncated SVD, obteniendo 150 y 100 componentes (Camda_resistencia_amr_counts.ipynb)
+   - Non-Negative Matrix Factorization (NMF), obteniendo 150 y 100 componentes (Camda_resistencia_amr_counts.ipynb)
+ 2- Clasificación.
+   Se usaron clasificadores basados en random forests (RF), gradient boosting (XGBoost) y redes neuronales (NNET). Estos se ajustaron usando las bases de datos preprocesadas en el paso anterior:
+   - $X$: OTUS, $y$: City
+   - $X$: Gene counts, $y$: City
+   - $X$: OTUS y Gene counts, $y$: City
+   - $X$: OTUS reducido, $y$: City [por hacer]
+   - $X$: OTUS reducido y Gene counts, $y$: City [por hacer]
+  Hasta ahora, los mejores resultados se obtuvieron con XGBoost
+       |        | precision |  recall | f1-score |  support |
+       |---|---|---|---|---|
+       |    0  |     0.00  |    0.00  |    0.00    |     3 |
+       |    1  |     0.67  |    0.67  |    0.67    |     3 |
+       |    2  |     0.60  |    1.00  |    0.75    |     3 |
+       |    3  |     1.00  |    1.00  |    1.00    |     3 |
+       |    4  |     0.75  |    1.00  |    0.86    |     9 |
+       |    5  |     1.00  |    0.50  |    0.67    |     6 |
+       |    6  |     1.00  |    0.71  |    0.83    |     7 |
+       |    7  |     0.50  |    0.67  |    0.57    |     3 |
+       |    8  |     1.00  |    1.00  |    1.00    |     1 |
+       |    9  |     0.64  |    1.00  |    0.78    |     9 |
+       |   10  |     1.00  |    0.33  |    0.50    |     3 |
+       |   11  |     1.00  |    0.67  |    0.80    |     3 |
+       |   12  |     0.83  |    1.00  |    0.91    |     5 |
+       |   13  |     0.75  |    0.90  |    0.82    |    10 |
+       |   14  |     0.50  |    0.33  |    0.40    |     3 |
+       |   15  |     0.00  |    0.00  |    0.00    |     3 |
+|---|---|---|---|---|
+    accuracy                           0.74        74
+   macro avg       0.70      0.67      0.66        74
+weighted avg       0.73      0.74      0.71        74
 
