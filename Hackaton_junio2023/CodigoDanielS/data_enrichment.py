@@ -13,16 +13,46 @@ from sklearn.preprocessing import (Binarizer, LabelEncoder, MinMaxScaler,
                                    Normalizer, OneHotEncoder, OrdinalEncoder,
                                    PowerTransformer, QuantileTransformer,
                                    RobustScaler, StandardScaler)
+from sklearn.decomposition import PCA
+from sklearn.pipeline import make_pipeline
+
+
+# Custom functions
+class LogScaler:
+  def __init__(self):
+    pass
+  def fit(self, X):
+    return self
+  def transform(self, X):
+    return np.log(X+1)
+  def fit_transform(self, X):
+    return self.fit(X).transform(X)
+
+
+class LogAndPca:
+  def __init__(self):
+    self.pca = PCA()
+    pass
+  def fit(self, X):
+    self.pca.fit(np.log(X+1))
+    return self
+  def transform(self, X):
+    return self.pca.transform(np.log(X+1))
+  def fit_transform(self, X):
+    return self.pca.fit_transform(np.log(X+1))
 
 
 # Scalers to use
 scalers = {
-  "MinMaxScaler": MinMaxScaler,
-  "Normalizer": Normalizer,
-  "PowerTransformer": PowerTransformer,
-  "QuantileTransformer": QuantileTransformer,
-  "RobustScaler": RobustScaler,
-  "StandardScaler": StandardScaler,
+  "MinMaxScaler": MinMaxScaler(),
+  "Normalizer": Normalizer(),
+  "PowerTransformer": PowerTransformer(),
+  "QuantileTransformer": QuantileTransformer(),
+  "QuantileTransformer-50": QuantileTransformer(n_quantiles=50),
+  "RobustScaler": RobustScaler(),
+  "StandardScaler": StandardScaler(),
+  "LogScaler": LogScaler(),
+  "LogAndPca": LogAndPca(),
 }
 
 # Import data
@@ -58,6 +88,8 @@ for i in range(len(data_y)):
 
 # -----------------------------------------------------------------------------
 def normalize_data(_df,prefix="",norm="MinMaxScaler"):
+  # Log the beginning of the process
+  print(f"Normalizing '{prefix}' data with '{norm}' scaler")
   # # take a sabple of the data with N columns and N rows
   # N = 10
   # df_i = df_i.iloc[:N,:N]
@@ -67,12 +99,21 @@ def normalize_data(_df,prefix="",norm="MinMaxScaler"):
   data = np.array(data, dtype=float)
 
   # Start the normalization process
-  scaler = scalers[norm]()
+  scaler = scalers[norm]
   df_norm = scaler.fit_transform(data.T).T
+
+  # if the scaler is a PCA, then recover only the first 30 components (30 is arbitrary)
+  if "Pca" in norm:
+    df_norm = df_norm[:30,:]
 
   # Save into the original dataframe
   df_o = _df.copy()
+  df_o = df_o.iloc[:df_norm.shape[0],:]
   df_o.iloc[:,1:] = df_norm
+
+  # enumerate the rows (in 'OTU ID' column) if there are only 30 rows
+  if df_o.shape[0] == 30:
+    df_o["OTU ID"] = range(30)
 
   # # Add new rows to the dataframe with the year of the sample (0:2016, 1:2017)
   # new_row = pd.Series([-1]+[0 if "gCSD16" in h else 1 for h in df_o.columns[1:]], index=df_o.columns)
@@ -87,7 +128,7 @@ def normalize_data(_df,prefix="",norm="MinMaxScaler"):
   plt.ylabel("Samples")
 
   # Block to save the data into a file ------------------------------------------
-  scaler_name = scaler.__class__.__name__
+  scaler_name = norm
   df_o.to_csv(f"Hackaton_junio2023/CodigoDanielS/dta_{prefix}_{scaler_name}.tsv", sep='\t', index=False)
   plt.savefig(f"Hackaton_junio2023/CodigoDanielS/dta_{prefix}_{scaler_name}.png")
 
