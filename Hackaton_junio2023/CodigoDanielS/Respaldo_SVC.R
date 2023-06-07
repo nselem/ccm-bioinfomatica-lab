@@ -28,28 +28,33 @@ colnames(MinMaxScaler_T) <- b
 ### Finaliza el etiquetado
 
 #random_numbers <- sample(1:length(y0), size = 58)
-rango <- 500:17010
+rango <- 500:17010 # Número de OTUS que usará el algoritmo
 #rango <- 500:ncol(MinMaxScaler_T)
 
 ### Entrenamiento
-attach(MinMaxScaler_T)
+attach(MinMaxScaler_T) # Facilita el acceso a la base de datos
 
-avgMMS <- c()
+avgMMS <- c() # Vector para almacenar los resultados de las predicciones
 
-for(i in 1:5){
+for(i in 1:5){ #Para realizar las predicciones iteradamente
   
   dat_train <- data.frame(y = factor(y[-as.vector(random_numbers)]), MinMaxScaler_T[-random_numbers,rango]) #Declaración de data frame para entrenamiento de algoritmo
   classifier <- svm(y ~ ., data = dat_train, scale = FALSE, kernel = "linear", cost = 10) #Entrenamiento de algoritmo SVM
-  #Queda mejor el kernel "linear"
+  #Resultados promedio obtenidos con los distintos núcleos
+  #linear 0.6206897
+  #radial 0.13793103
+  #sigmoid(3) 0.12068966
+  #polynomial(3) 0.06896552     
+  #polynomial(5) 0.06896552     
+  #polynomial(2) 0.06896552     
   
   ### Predicción
-  dat_test <- data.frame(y = factor(y[as.vector(random_numbers)]), MinMaxScaler_T[as.vector(random_numbers),rango])
-  y_pred <- predict(classifier, dat_test)
+  dat_test <- data.frame(y = factor(y[as.vector(random_numbers)]), MinMaxScaler_T[as.vector(random_numbers),rango]) # Datos que probará a clasificar el algoritmo
+  y_pred <- predict(classifier, dat_test) # Predicción de etiquetado de la muestra dat_test
   
   ### Cálculo de matriz de confusiones
   cm <- confusionMatrix(as.factor(dat_test$y), as.factor(y_pred))
-  cm
-  avgMMS[i] <- cm$overall[1]
+  avgMMS[i] <- cm$overall[1] #
   
 }
 
@@ -86,7 +91,12 @@ for(i in 1:10){
   
   dat_train <- data.frame(y = factor(y[-as.vector(random_numbers)]), PowerTransformer_T[-random_numbers,rango]) #Declaración de data frame para entrenamiento de algoritmo
   classifier <- svm(y ~ ., data = dat_train, scale = FALSE, kernel = "radial", cost = 10) #Entrenamiento de algoritmo SVM
-  #Queda mejor el kernel "radial"
+  #linear 0.32
+  #radial 0.32
+  #sigmoid(4) 0.05172414 
+  #polynomial(3) 0.05
+  #polynomial(5) 0.05172414
+  #polynomial(2) 0.05172414 
   
   ### Predicción
   dat_test <- data.frame(y = factor(y[as.vector(random_numbers)]), PowerTransformer_T[as.vector(random_numbers),rango])
