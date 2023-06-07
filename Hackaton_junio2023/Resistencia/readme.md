@@ -20,7 +20,7 @@ Figure 3 Example of sample-profile
 Table1 Ids that maybe SNPs  
 | Gen1  | Function   | Organism   | Gen2   | Function2   | Organims2 |  
 |---|---|---|---|---|---|  
-| chuX  |   |   |shuX  |   |   |  
+| chuX  | ChuY has been shown to function as an anaerobilin reductase, in a role that parallels biliverdin reductase  |   |shuX  |   |   |  
 | chuY |   |    |shuY   |   |   |  
 | chuZ  |   |   |shuZ   |   |   |  
 | fliG  |   |   |fliI  |   |   |  
