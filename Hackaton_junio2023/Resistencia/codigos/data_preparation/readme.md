@@ -27,5 +27,4 @@ Blasts the query sequence to all the fasta files in the data folder.
 Parses the results from blastScript.sh (blastAll.txt) to generate the count table, requires the list of gene markers (amrMysteryList.txt) to assign the columns
 
 ## References  
-[ ][Antibiotic resistance and metabolic profiles as functional biomarkers that accurately predict the geographic origin of city metagenomics samples
-](https://biologydirect.biomedcentral.com/articles/10.1186/s13062-019-0246-9)  
+[ ][CARD database](https://card.mcmaster.ca/download)  
