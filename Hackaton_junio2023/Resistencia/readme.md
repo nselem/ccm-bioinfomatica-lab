@@ -85,9 +85,8 @@ Se implementaron varios métodos de clasificación haciendo los siguientes pasos
    - $X$: OTUS y Gene counts, $y$: City
    - $X$: OTUS reducido, $y$: City [por hacer]
    - $X$: OTUS reducido y Gene counts, $y$: City [por hacer]
-   - 
+   
   Hasta ahora, los mejores resultados se obtuvieron con XGBoost ajustado con GridSearch y validación cruzada:
-  
        |        | precision |  recall | f1-score |  support |
        |---|---|---|---|---|
        |    0  |     0.00  |    0.00  |    0.00    |     3 |
@@ -110,7 +109,7 @@ Se implementaron varios métodos de clasificación haciendo los siguientes pasos
        |    accuracy |           |           |    0.74  |      74 |
        |   macro avg |      0.70 |     0.67  |    0.66  |      74 |
        | weighted avg |      0.73 |     0.74 |     0.71 |       74 |
-
+       |---|---|---|---|---|
 
 Por hacer, hay varias cosas:
 
