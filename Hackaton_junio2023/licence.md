@@ -24,9 +24,9 @@ license terms.
 Under the following terms:
 
 * **Attribution**---You must give appropriate credit (mentioning that
-  your work is derived from work that is Copyright © [Claudia Zirion, Diego Garfias, Vanessa Arellano, 
-  Aaron Jaime, Abel Lovaco, Daniel Díaz, Abraham Avelar, Nelly Sélem] and, where practical, linking to
-  https://carpentries-incubator.github.io/metagenomics-workshop/), provide a [link to the
+  your work is derived from work that is Copyright © [CPaula Camila Silva Gómez,Francisco Santiago Nieto de la Rosa, José Miguel Calderon Leon,Mariel Guadalupe Gutiérrez Chaveste,Johan Eduardo Pérez Ramírez, Andrés Arredondo Cruz, Antón Pashkov, Rafael Pérez Estrada, Karina Enriquez Guillén, Diana Barceló Antemate,Francisco José Villalobos Salcido, Imanol Nuñez Morales, Jose Abel Lovaco Flores, Fernando Fontove Herrera José María Ibarra Rodríguez, 
+Daniel Santana Quinteros, Adriana Haydee Contreras Peruyero, Shaday Flores Guerrero, Miguel Ángel Magaña Lemus, Lilia Leticia Ramírez Ramírez,
+Mirna Vázquez Rosas Landa, Nelly Sélem Mojica, Eugenio Balanzario, Mario Carranza, Miguel Nakamura Savoy, Víctor Muñiz Sánchez and Nelly Sélem ] and, where practical, linking to https://github.com/nselem/ccm-bioinfomatica-lab/tree/main/Hackaton_junio2023), provide a [link to the
   license][cc-by-human], and indicate if changes were made. You may do
   so in any reasonable manner, but not in any way that suggests the
   licensor endorses you or your use.
