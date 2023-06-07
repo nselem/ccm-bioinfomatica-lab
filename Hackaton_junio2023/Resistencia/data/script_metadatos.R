@@ -2,17 +2,20 @@ library("phyloseq")
 library("ggplot2")
 library("RColorBrewer")
 library("patchwork")
-library(tidyr)
-library(tidyverse)
+library("tidyr")
+library("tidyverse")
 
 setwd("~/CAMDA23/completos")
 
 
+setwd("/home/shaday/GIT/ccm-bioinfomatica-lab/Hackaton_junio2023/Resistencia")
 
+Camda=import_biom("data/assembly_365_2.biom")
+Camda2=import_biom("data/read_365_2.biom")
 # Cargar archivo .biom
 
 
-raw_metagenomes <- import_biom("~/c23/taxonomy/read_365.biom")
+raw_metagenomes <- import_biom("data/assembly_365_2.biom")
 raw_metagenomes@tax_table@.Data <- substring(raw_metagenomes@tax_table@.Data, 4)
 colnames(raw_metagenomes@tax_table@.Data)<- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
 View(raw_metagenomes@tax_table@.Data)
@@ -47,7 +50,7 @@ colnames(cd) <- c("City","Freq")
 
 
 library(readr)
-coord <- read_csv("~/CAMDA23/metadata.csv")
+coord <- read_csv("metadata.csv")
 View(coord)
 
 
