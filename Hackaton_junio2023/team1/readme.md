@@ -30,3 +30,10 @@ First we are subseting the total OTU table into the following tables.
 We glomed two OTU tables:reads-OTU table and one for assemblies into several tables by taxonomic agglomeration.  
 We model the distribution of zero's in the all kingdoms-phylum table.  
 We run machine learning models (Victor's code) in the original reads-OTU table. 
+
+## Variable selection
+We propose a method to select OTUs that help us differentiate at least two of the cities. 
+The proposed selection uses negative binomial regression to account for overdispersion of absolute abundance, caused both by zeros and high level counts. 
+To select the differentiating OTUs we compute p-values and for every pair of cities we select a fixed number of OTUs with the best (lowest) p-values. 
+This selection is mostly automatized in the script [variable_selection.R](https://github.com/nselem/ccm-bioinfomatica-lab/blob/main/Hackaton_junio2023/team1/variable_selection.R). 
+Currently the proposed method only works for reads and considering all kingdoms. 
