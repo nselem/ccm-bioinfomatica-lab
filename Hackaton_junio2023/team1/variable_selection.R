@@ -6,13 +6,16 @@ pacman::p_load(ggplot2, ggthemes,                       # Plots
 # library(ggthemes)
 # library(dplyr)
 # library(tibble)
-# library(purrr)
-# library(broom)
+# library(DESeq2)
+# library(fdrtool)
 
 #-------------------------------------------------------------------------------
 # Working directory
 setwd("~/camda/variable_selection/")
 
+#-------------------------------------------------------------------------------
+# Extract the p-value for a non-constant term in a regression model of the 
+# form y ~ 1 + x
 pValueFromSummary <- function(fit) {
     if (is.null(fit)) {
         pValue <- NA
@@ -22,6 +25,9 @@ pValueFromSummary <- function(fit) {
     return(pValue)
 }
 
+#-------------------------------------------------------------------------------
+# A safety function to keep differentialOtusPvalues running even if certain 
+# fits cannot be achieved by numerical errors
 poss_glm.nb <- possibly(.f = MASS::glm.nb, otherwise = NULL)
 
 #-------------------------------------------------------------------------------
@@ -33,8 +39,14 @@ poss_glm.nb <- possibly(.f = MASS::glm.nb, otherwise = NULL)
 differentialOtusPvalues <- function(db) {
     #####
     # Negative Binomial model without DESeq2
-    # TODO: comment the function
     
+    # We assume that the data is given by columns, where the first column 
+    # corresponds to the OTU ID and the others to the samples
+    # We pivot the data to a longer table with three columns: the OTUS, the 
+    # sample name and the number of reads of an OTU in an sample
+    # Then we add a column with the number of reads for each sample and a 
+    # logarithmic transformation
+    # We finally add the city and year from where the sample is from
     db <- db %>% 
         as_tibble() %>% 
         pivot_longer(-"X", names_to = "sample", values_to = "counts") %>% 
@@ -48,9 +60,14 @@ differentialOtusPvalues <- function(db) {
             year = substr(sample, 21, 22), 
             sample_loc = paste0(city, year))
     
+    # Get all city-year classes and the number of them
     locations <- unique(unlist(db$sample_loc))
     nLocs <- length(locations)
     
+    # Initialize the data frame where p-values, and adjusted p-values, 
+    # will be stored
+    # As we will be adjusting a model for each OTU, and each pair of 
+    # city-year, this IDs will also be stored
     pValues <- data.frame(
         OTU = integer(), pvalues = double(), loc1 = character(), 
         loc2 = character(), locs = character(), adj_pvalues = double()
@@ -59,6 +76,21 @@ differentialOtusPvalues <- function(db) {
     k <- 1
     for (i in 1:(nLocs - 1)) {
         for (j in (i+1):nLocs) {
+            # Given two city-year classes, we first filter the data that 
+            # corresponds to said samples, which we convert to a factor with 
+            # levels 0 and 1
+            # We then eliminate any OTU that had 0 reads among all the sample 
+            # The nesting is done at the OTU level, to adjust a negative 
+            # binomial model for each OTU
+            # After the models are adjsuted, we extract the p-value of the 
+            # coefficient corresponding to the dummy variable given by the 
+            # city-year
+            # After unnesting the p-values, we only keep the OTUs ID and their 
+            # p-values, adding for each city-year, a column with the ID of 
+            # city-years being compared
+            # We then filter any OTUs such that the computed p-value is NA, 
+            # to then compute the adjusted p-values via the Benjamini-Hochberg
+            # correction
             tempPvalues <- db %>% 
                 filter(sample_loc %in% locations[c(i, j)]) %>% 
                 mutate(sample_loc = factor(sample_loc)) %>% 
@@ -86,6 +118,8 @@ differentialOtusPvalues <- function(db) {
                 mutate(
                     adj_pvalues = p.adjust(pvalues, method = "fdr")
                 )
+            # We join the computed p-values to the data.frame that contains 
+            # the computed p-values in previos iterations
             pValues <- pValues %>% 
                 full_join(tempPvalues, by = c(
                     "OTU", "pvalues", "loc1", "loc2", "locs", "adj_pvalues"
@@ -269,10 +303,14 @@ path_to_counts <- "~/camda/variable_selection/reads/"
 train_test_set <- read.csv("./Train_Test.csv", row.names = 1)
 train_cols <- train_test_set$Num_Col[train_test_set$Train == 1]
 kpvalues <- 5
-hlevels <- c("_Phylum", "_Class", "_Order", "_Family", "_Genus")
+hlevels <- c("_Phylum", "_Class", "_Order", "_Family", 
+             "AB_Phylum", "AB_Class", "AB_Order", "AB_Family", 
+             "Eukarya_Phylum", "Eukarya_Class", "Eukarya_Order", "Eukarya_Family",
+             "Viruses_Phylum", "Viruses_Class", "Viruses_Order", "Viruses_Family")
 
 smth <- variableSelection(path_to_counts = path_to_counts, 
-                          train_cols = train_cols, kpvalues = kpvalues)
+                          train_cols = train_cols, kpvalues = kpvalues, 
+                          hlevels = hlevels)
 
 smth[[1]] %>% 
     ggplot(aes(x = locs, y = -log(adj_pvalues), colour = hlevel)) + 
