@@ -1,19 +1,28 @@
 #-------------------------------------------------------------------------------
 # Load libraries via pacman
-pacman::p_load(#ggplot2, ggthemes,                     # Plots
-               dplyr, tibble, tidyr,                  # Data frame manipulation
-               DESeq2, fdrtool)                       # Models
-# We can use 
+pacman::p_load(ggplot2, ggthemes,                       # Plots
+    dplyr, tibble, tidyr, purrr, broom)                 # Data frame manipulation 
 # library(ggplot2)
 # library(ggthemes)
 # library(dplyr)
 # library(tibble)
-# library(DESeq2)
-# library(fdrtool)
+# library(purrr)
+# library(broom)
 
 #-------------------------------------------------------------------------------
 # Working directory
 setwd("~/camda/variable_selection/")
+
+pValueFromSummary <- function(fit) {
+    if (is.null(fit)) {
+        pValue <- NA
+    } else {
+        pValue <- summary(fit)$coefficients[,4][2]
+    }
+    return(pValue)
+}
+
+poss_glm.nb <- possibly(.f = MASS::glm.nb, otherwise = NULL)
 
 #-------------------------------------------------------------------------------
 # differentialOtusPvalues calculates the p-values according to log2-fold change 
@@ -23,71 +32,69 @@ setwd("~/camda/variable_selection/")
 
 differentialOtusPvalues <- function(db) {
     #####
-    # Negative Binomial model using DESeq2
-    #
+    # Negative Binomial model without DESeq2
+    # TODO: comment the function
     
-    # Create DESeqDataSet object
-    # We assume that the first column in db gives the OTU ID
-    countData <- as.matrix(db[, -1])
-    mode(countData) <- "integer"
-    transposedData <- t(as.matrix(column_to_rownames(db, var = "X")))
-    # Separate by city and year
-    sampleLocations <- paste0(
-        t(as.data.frame(strsplit(rownames(transposedData),"_")))[,4], 
-        str_sub(
-            t(as.data.frame(strsplit(rownames(transposedData),"_")))[,3], 
-            -2, -1
-        ),
-        sep = ""
+    db <- db %>% 
+        as_tibble() %>% 
+        pivot_longer(-"X", names_to = "sample", values_to = "counts") %>% 
+        group_by(sample) %>% 
+        mutate(nReads = sum(counts)) %>% 
+        mutate(
+            logNreads = ifelse(
+                nReads == 0, 1e-30, log(nReads)
+            ), 
+            city = substr(sample, 24, 26), 
+            year = substr(sample, 21, 22), 
+            sample_loc = paste0(city, year))
+    
+    locations <- unique(unlist(db$sample_loc))
+    nLocs <- length(locations)
+    
+    pValues <- data.frame(
+        OTU = integer(), pvalues = double(), loc1 = character(), 
+        loc2 = character(), locs = character(), adj_pvalues = double()
     )
-    rownames(countData) <- db[, 1]
-    # Create metadata (covariates) for negative binomial regression
-    metaData <- data.frame(city = factor(sampleLocations),
-                           logNReads = scale(log(colSums(countData))),
-                           row.names = colnames(db)[-1])
-    deseq <- DESeqDataSetFromMatrix(countData = countData,
-                                    colData = metaData,
-                                    design = ~ city + offset(logNReads))
-    
-    # We fit the Negative Binomial model with DESeq2
-    deseq <- deseq[rowSums(counts(deseq)) > 0,]
-    deseq <- estimateSizeFactors(deseq, type = "poscounts") 
-    deseq <- estimateDispersions(deseq)
-    deseq <- DESeq(deseq)
-    
-    locations <- unique(sampleLocations)
-    numLocations <- length(locations)
-    diffOtusList <- vector("list", numLocations * (numLocations - 1) / 2)
-    
-    # Compute adjusted p-values for log2-fold changes
+    pb <- txtProgressBar(min = 0, max = nLocs * (nLocs - 1) / 2, style = 3)
     k <- 1
-    pValues <- data.frame(OTU = character())
-    for (i in 1:(numLocations - 1)) {
-        loc1 <- locations[i]
-        for (j in (i + 1):numLocations) {
-            loc2 <- locations[j]
-            tempRes <- results(deseq, contrast = c("city", loc1, loc2))
-            # remove filtered out OTUs by independent filtering 
-            # they have NA adj. pvals
-            tempRes <- tempRes[ !is.na(tempRes$padj),]
-            # with NA pvals (outliers)
-            tempRes <- tempRes[ !is.na(tempRes$pvalue),]
-            
-            tempRes <- tempRes[, -which(names(tempRes) == "padj")]
-            res_fdr <- fdrtool(tempRes$stat, statistic = "normal", plot = FALSE)
-            tempRes[,"padj"] <- p.adjust(res_fdr$pval, method = "BH")
-            tempPvalues <- data.frame(
-                x = rownames(tempRes),
-                y = tempRes$padj
-            )
-            names(tempPvalues) <- c("OTU", paste0(loc1, "_vs_", loc2))
+    for (i in 1:(nLocs - 1)) {
+        for (j in (i+1):nLocs) {
+            tempPvalues <- db %>% 
+                filter(sample_loc %in% locations[c(i, j)]) %>% 
+                mutate(sample_loc = factor(sample_loc)) %>% 
+                ungroup() %>% group_by(X) %>% 
+                mutate(otuReads = sum(counts)) %>% 
+                ungroup() %>% 
+                filter(otuReads > 0) %>% 
+                select(-otuReads) %>%
+                nest(-X) %>% 
+                mutate(nb.fit = map(data, ~ poss_glm.nb(
+                    counts ~ 1 + offset(logNreads) + sample_loc, 
+                    data = .
+                ))) %>% 
+                mutate(
+                    pvalues = map(nb.fit, ~ pValueFromSummary(.))
+                ) %>% unnest(pvalues) %>% 
+                select(c("X", "pvalues")) %>% 
+                mutate(
+                    loc1 = locations[i], 
+                    loc2 = locations[j], 
+                    locs = paste0(loc1, "_vs_", loc2)
+                ) %>% 
+                filter(!is.na(pvalues)) %>% 
+                rename("OTU" = "X") %>% 
+                mutate(
+                    adj_pvalues = p.adjust(pvalues, method = "fdr")
+                )
             pValues <- pValues %>% 
-                full_join(tempPvalues, by = join_by(OTU))
-            cat(sprintf("%d of %d done\n", k, length(diffOtusList)))
+                full_join(tempPvalues, by = c(
+                    "OTU", "pvalues", "loc1", "loc2", "locs", "adj_pvalues"
+                ))
+            setTxtProgressBar(pb, k)
             k <- k + 1
         }
     }
-    pValues[is.na(pValues)] <- 1
+    
     return(pValues)
 }
 
@@ -100,12 +107,16 @@ computePvaluesLevel <- function(hLevel, path_to_counts, reads = TRUE, train = NU
                                 path_to_pvalues = NULL) {
     # Test if the count data is for reads or for assembly data
     if (reads) {
-        db <- read.csv(paste0(path_to_counts, "reads_count_",
-                              hLevel, ".csv"))
+        db <- read.csv(paste0(path_to_counts, "reads", 
+                              sub('(.*)_.*', '\\1', hLevel, perl = TRUE), 
+                              "_count__",
+                              sub('.*_(.*)', '\\1', hLevel, perl = TRUE), ".csv"))
     } else {
-        db <- read.csv(paste0(path_to_counts, "assembly_count_",
-                              hLevel, ".csv"))
-    } 
+        db <- read.csv(paste0(path_to_counts, "assembly", 
+                              sub('(.*)_.*', '\\1', hLevel, perl = TRUE), 
+                              "_count__",
+                              sub('.*_(.*)', '\\1', hLevel, perl = TRUE), ".csv"))
+    }
     # Subsetting training data set
     if (is.null(train)) {
         train_db <- db
@@ -131,30 +142,33 @@ computePvaluesLevel <- function(hLevel, path_to_counts, reads = TRUE, train = NU
 getKOtus <- function(db, k) {
     # Put all p-values into a single column, identifying them by the cities 
     # being contrasted
-    pValueslong <- db %>% 
-        pivot_longer(cols = -c("OTU", "hlevel"), 
-                     names_to = "cities", 
-                     values_to = "p-value") %>% 
-        mutate(city1 = substr(cities, 1, 5), city2 = substr(cities, 10, 15))
+    #    pValueslong <- db %>% 
+    #    pivot_longer(cols = -c("OTU", "hlevel"), 
+    #                 names_to = "cities", 
+    #                 values_to = "p-value") %>% 
+    #    mutate(city1 = substr(cities, 1, 5), city2 = substr(cities, 10, 15))
     
     # Which comparisons were made
-    comparisons <- unique(unlist(pValueslong$cities))
+    comparisons <- unique(unlist(db$locs))
     # Initialize the data frame for the k most significant OTUs per 
     # city vs city contrast
     reducedK <- data.frame(
-        OTU = integer(), hlevel = character(), cities = character(), 
-        "p-value" = numeric(), city1 = character(), city2 = character(), 
-        sign_rank = integer()
+        OTU = integer(), pvalues = double(), loc1 = character(), 
+        loc2 = character(), locs = character(), adj_pvalues = double(),  
+        hlevel = character(), sign_rank = integer()
     )
     # Get the significant OTus
     for(i in 1:length(comparisons)) {
-        tempData <- pValueslong %>% 
-            filter(cities == comparisons[i]) %>% 
-            arrange(`p-value`) %>% 
+        tempData <- db %>% 
+            filter(locs == comparisons[i]) %>% 
+            arrange(adj_pvalues) %>% 
             head(n = k) %>% 
             mutate(sign_rank = 1:k)
         reducedK <- reducedK %>% 
-            full_join(tempData)
+            full_join(tempData, by = c(
+                "OTU", "pvalues", "loc1", "loc2", "locs", "adj_pvalues",
+                "hlevel", "sign_rank"
+            ))
     }
     
     # Add an ID for OTU - class
@@ -174,11 +188,19 @@ constructIntegratedData <- function(sign_otus, path_to_counts, reads = TRUE) {
     for (i in 1:length(hLevels)) {
         if (reads) {
             tempData <- read.csv(
-                paste0(path_to_counts, "reads_count_", hLevels[i], ".csv")
+                paste0(path_to_counts, "reads", 
+                       sub('(.*)_.*', '\\1', hLevels[i], perl = TRUE), 
+                       "_count__", 
+                       sub('.*_(.*)', '\\1', hLevels[i], perl = TRUE), 
+                       ".csv")
             )
         } else {
             tempData <- read.csv(
-                paste0(path_to_counts, "assembly_count_", hLevels[i], ".csv")
+                paste0(path_to_counts, "assembly", 
+                       sub('(.*)_.*', '\\1', hLevels[i], perl = TRUE), 
+                       "_count__", 
+                       sub('.*_(.*)', '\\1', hLevels[i], perl = TRUE), 
+                       ".csv")
             )
         }
         # Subset which significant OTUs correspond to a given taxonomical 
@@ -187,7 +209,8 @@ constructIntegratedData <- function(sign_otus, path_to_counts, reads = TRUE) {
             filter(hlevel == hLevels[i])
         # Subset those significant OTUs from the count data 
         dataSubsets[[i]] <- tempData[tempData[, 1] %in% tempOTUs$OTU, ] %>% 
-            mutate(hlevel = hLevels[i])
+            mutate(hlevel = hLevels[i]) %>% 
+            rename("OTU" = "X")
     }
     # Merge all of the subsetted data
     retDF <- dataSubsets[[1]]
@@ -199,7 +222,7 @@ constructIntegratedData <- function(sign_otus, path_to_counts, reads = TRUE) {
     }
     # 
     retDF <- retDF %>% 
-        mutate(ID = paste0(OTU, hlevel)) %>% 
+        mutate(ID = paste0(OTU,"_", hlevel)) %>% 
         dplyr::select(-c("OTU", "hlevel")) %>% 
         relocate(ID)
     return(retDF)
@@ -209,13 +232,18 @@ constructIntegratedData <- function(sign_otus, path_to_counts, reads = TRUE) {
 # The function variableSelection implements all of the steps to select a subset 
 # of OTUs that allow us to differentiate between cities
 variableSelection <- function(hlevels = c("_Phylum", "_Class", "_Order", "_Family", "_Genus"), 
-                              path_to_counts, train_cols, kpvalues = 5, reads = TRUE) {
+                              path_to_counts, train_cols = NULL, kpvalues = 5, reads = TRUE) {
     # Initialize a list to save the matrices of p-values for every run
     pValuesList <- vector("list", length = length(hlevels))
     for (i in 1:length(hlevels)) {
+        cat(sprintf("Starting with %s\n", hlevels[i]))
         pValuesList[[i]] <- computePvaluesLevel(
-            hlevels[i], path_to_counts, train_cols, reads
+            hLevel = hlevels[i], 
+            path_to_counts = path_to_counts, 
+            train = train_cols, 
+            reads = reads
         )
+        cat(sprintf("\n%d of %d done\n", i, length(hlevels)))
     }
     # Merge all of the p-values matrices
     pValues <- pValuesList[[1]]
@@ -245,6 +273,17 @@ hlevels <- c("_Phylum", "_Class", "_Order", "_Family", "_Genus")
 
 smth <- variableSelection(path_to_counts = path_to_counts, 
                           train_cols = train_cols, kpvalues = kpvalues)
+
+smth[[1]] %>% 
+    ggplot(aes(x = locs, y = -log(adj_pvalues), colour = hlevel)) + 
+    geom_hline(yintercept = -log(1e-3), colour = "hotpink") + 
+    geom_point(alpha = 0.1, size = 1) + 
+    theme_few() + 
+    ylab("-log(p-value)") + 
+    xlab("") + 
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=rel(0.5)),
+          legend.position = "top") + 
+    guides(colour = guide_legend(override.aes = list(alpha = 1, size = 4)))
 
 #pValuesPh <- read.csv("./pValues/train_pvalues_Phylum.csv", row.names = 1) %>% 
 #    mutate(hlevel = "Phylum")
